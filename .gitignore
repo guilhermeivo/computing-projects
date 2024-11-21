@@ -38,7 +38,7 @@
 *.x86_64
 *.hex
 
-sudoku
+sudoku.out
 
 # Debug files
 *.dSYM/
