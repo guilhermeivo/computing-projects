@@ -1,0 +1,768 @@
+%\iffalse
+%
+%<driver>\ProvidesFile{pi.dtx}
+%
+%<*driver>
+\listfiles
+    \documentclass[oneside, a4paper, 12pt]{ltxdoc}
+    \usepackage{float}
+    % Packages
+    \usepackage[
+            a4paper, 
+            top=3.0cm,
+            bottom=1cm,
+            left=3.5cm,
+            right=2.0cm,
+            footskip=1.5cm,
+            includefoot]{geometry}
+    \usepackage[brazil]{babel}
+    \usepackage[T1]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{hypdoc}
+    \usepackage{newtx}
+    \usepackage{listings}
+    \usepackage{hyperref}
+    \usepackage{graphicx}
+    \usepackage{amsmath}
+    \let\openbox\relax
+    \usepackage{amsthm}
+    \usepackage{parskip}
+
+    \usepackage{tikz}
+    %
+    %\CodelineIndex
+    \DeclareMathOperator{\arctg}{arctg}
+    \makeatletter
+    \lstdefinestyle{macrocode}{
+        name=macrocode,
+        language = C++,
+        % Colors
+        keywordstyle    = \color{violet},
+        stringstyle     = \color{red},
+        commentstyle    = \color{gray},
+        backgroundcolor = \color{white},
+        rulesepcolor    = \color{darkgray}, 
+        identifierstyle = \color{black},
+        % Caracteres
+        basicstyle       = \ttfamily\footnotesize,
+        extendedchars    = true,
+        showspaces       = false,
+        showstringspaces = false,
+        % Frame Style
+        numbers         = left,
+        tabsize         = 2,
+        numberstyle     = \scriptsize,
+        frame           = shadowbox,
+        breaklines      = true,
+        breakautoindent = true,
+        captionpos      = b,
+        xleftmargin     = 25pt,
+        xrightmargin    = 25pt,
+        aboveskip       = 10pt,
+        belowskip       = 10pt,
+        belowcaptionskip = 5pt,
+        captionpos      = t,
+        % Caracteres especiais
+        literate =
+        {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+        {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+        {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+        {À}{{\`A}}1 {È}{{\`E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+        {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+        {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+        {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+        {ã}{{\~a}}1 {ẽ}{{\~e}}1 {ĩ}{{\~i}}1 {õ}{{\~o}}1 {ũ}{{\~u}}1
+        {Ã}{{\~A}}1 {Ẽ}{{\~E}}1 {Ĩ}{{\~I}}1 {Õ}{{\~O}}1 {Ũ}{{\~U}}1
+        {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+        {ç}{{\c c}}1 {Ç}{{\c C}}1
+    }
+
+    \def\thebibliography#1{%
+        \newpage%
+        \phantomsection%
+        \addcontentsline{toc}{section}{\protect\numberline{}\refname}%
+
+        {\centering\section*{\refname}}%
+        \list{\@biblabel{\arabic{enumi}}}%
+            {\settowidth\labelwidth{(#1)}%
+            \leftmargin\labelwidth\advance\leftmargin\labelsep%
+                \usecounter{enumi}%
+            }%
+        \def\newblock{\hskip .11em plus .33em minus .07em}%
+        \sloppy\clubpenalty4000\widowpenalty4000\sfcode`\.=1000\relax%
+    }
+
+    %% BEGIN UPPERLETTER
+    \newlength{\fontsizeupperletter}
+
+    \newlength{\heighttext}
+    \newlength{\widthtext}
+    \newlength{\depthtext}
+    \newlength{\totaltext}
+    \newlength{\numberoflines}
+
+    \def\upperletter#1{
+        \par%
+        \vspace{20pt}%
+        \def\@temp{%
+            \noindent\fontsize{\fontsizeupperletter}{\fontsizeupperletter}\selectfont\uppercase\expandafter{#1}%
+        }
+        \settoheight{\heighttext}{\@temp}
+        \settowidth{\widthtext}{\@temp\relax}
+        \settodepth{\depthtext}{\@temp}
+        \setlength{\totaltext}{\dimexpr \heighttext+\depthtext+\the\baselineskip}
+        
+        {\@temp}
+
+        \vspace{-\totaltext}%
+        \noindent%
+        \hangindent=\dimexpr\widthtext+0.5pc\relax\hangafter=-\the\numexpr (\number\heighttext / \number\baselineskip) + 1\relax%
+    }
+
+    \setlength{\fontsizeupperletter}{64pt}
+    %% END UPPERLETTER
+
+    \def\Hline{%
+    \noalign {\ifnum0 =`}\fi \hrule \@height 1.5pt \futurelet \reserved@a \@xhline}
+
+    \renewcommand{\maketitle}{
+        {
+            \begin{center}
+                \expandafter\MakeUppercase\expandafter{\textbf{\Huge\@title}}
+            \end{center}
+        }
+    }
+
+    \def\ps@mainheadings{%
+        \def\@oddhead{\hspace*{-1cm}\reset@font\footnotesize{\slshape\@title}\hfill\thepage\hspace*{-1cm}}%
+        \def\@evenhead{\hspace*{-1cm}\reset@font\footnotesize\thepage\hfill\hspace*{-1cm}}%
+        \let\@oddfoot\@empty
+        \let\@evenfoot\@empty
+    }
+
+    \renewcommand{\section}{\@startsection {section}{1}{\z@}%
+        {-3.5ex \@plus -1ex \@minus -.2ex}%
+        {2.3ex \@plus .2ex}%
+        {\normalfont\LARGE\scshape\bfseries}%
+    }
+    \renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+        {-3.25ex\@plus -1ex \@minus -.2ex}%
+        {1.5ex \@plus .2ex}%
+        {\normalfont\Large\scshape\bfseries}%
+    }
+
+    \renewcommand{\subsubsection}{\@startsection{subsubsection}{2}{\z@}%
+        {-3.25ex\@plus -1ex \@minus -.2ex}%
+        {1.5ex \@plus .2ex}%
+        {\normalfont\normalsize\large\scshape\bfseries}%
+    }
+
+    \hypersetup{
+        colorlinks = true,
+        allcolors = black,
+        pdftitle = {\@title},
+        pdfauthor = {\@author},
+        pdfcreator = {\LaTeX}
+    }
+
+    \makeatother
+    \lstdefinestyle{docstrip}{
+        style=macrocode
+    }
+    \linespread{1.25} 
+    \setlength{\parskip}{5pt}
+    \setlength{\headsep}{30pt}
+    \setlength{\parindent}{1.5cm}
+
+    \title{Experimentos usando Pi}
+    \author{guilhermeivo}
+
+    \begin{document}
+        \pagestyle{mainheadings}
+        \maketitle\thispagestyle{empty}
+        \DocInput{\jobname.dtx}
+    \end{document}
+%</driver>
+%\fi
+%
+%\iffalse
+%<*c>
+/*********************************************************************/
+/**                                                                 **/
+/**   Pi number                                                     **/
+/**                                                                 **/
+/**   guilhermeivo                                                  **/
+/**                                                                 **/
+/*********************************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <gmp.h>
+#include <mpfr.h>
+#include "../timeclock.h"
+
+#define DEFAULT_ROUND MPFR_RNDN
+
+%</c>
+%\fi
+%
+%\noindent Queremos implementar algoritmos para calcular o valor de $\pi$ usando métodos computacionais.
+%
+%{\centering\section*{Pi usando Monte Carlo}}
+%
+%\upperletter O método de Monte Carlo é uma técnica de amostragem estatística, teve seu desencadeamento após o desenvolvimento do \textit{ENIAC}\footnote{O ENIAC produziu $2{,}037$ dígitos de $\pi$ em $70$ horas em $1949$ usando a \textit{Fórmula de Machin\index{John Machin!Fórmula de Machin}}\cite[p.~592 e 627]{pi-source-book}}, primeiro computador eletrônico, desenvolvido durante a Segunda Guerra Mundial, para lidar com grandes cálculos. O método baseia-se em números ``aleatórios'' para resolver os seus problemas que é aplicada com sucesso em diversos problemas contemporâneos \cite{special-issue}.
+%
+%\begin{macro}{monteCarlo()}
+%O problema consiste em montar um quadrado de comprimento $1$, e $\frac{1}{4}$ de uma circunferência inscrita nesse quadrado e de forma aleatório disparar pontos dentro do espaço.
+%
+%\begin{figure}[H]
+%\noindent\begin{minipage}{0.45\textwidth}
+%   \centering
+%   \begin{tikzpicture}
+%       \begin{scope}
+%           \clip(0, 0) rectangle (3, 3);
+%           \draw [fill=gray!7] (0, 0) circle (3);
+%       \end{scope}
+%
+%       \draw [fill=red!75,draw=none] (0.35, 2.15) circle (0.1);
+%       \draw [fill=red!75,draw=none] (1.5, 1) circle (0.1);
+%       \draw [fill=red!75,draw=none] (1.6, 0.5) circle (0.1);
+%       \draw [fill=red!75,draw=none] (2, 0.35) circle (0.1);
+%       \draw [fill=red!75,draw=none] (2.65, 2.45) circle (0.1);
+%
+%       \draw (3, 3) rectangle (0,0);
+%   \end{tikzpicture}%
+%\end{minipage}%
+%\hfill%
+%\begin{minipage}{0.45\textwidth}
+%   \begin{equation*}
+%   \begin{split}
+%       A=\pi\cdot R^{2}\Longrightarrow A=\pi \\
+%       A_{c}=\frac{\pi}{4}\approx4\cdot\frac{\text{dentro}}{\text{total}}=\pi
+%   \end{split}
+%   \end{equation*}%
+%\end{minipage}%
+%\end{figure}%
+%
+%\iffalse
+%<*c>
+/**
+ * @brief calcula o valor de pi usando o metodo de Monte Carlo
+ * 
+ * @param n quantidade de iteracoes desejado
+ * @return long double pi
+ */
+%</c>
+%\fi
+%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c,numbers=none]
+long double monteCarlo(unsigned long long n) {
+    unsigned long long ins;  
+    ins = 0;  
+    long double x, y, z, pi;
+
+    srand(time(NULL));
+    unsigned long long i;
+    for (i = 0; i < n; i++) {
+        x = (long double) rand() / (long double) RAND_MAX;
+        y = (long double) rand() / (long double) RAND_MAX;
+
+        z = x * x + y * y;
+        if (z <= 1) {
+            ins++;
+        }
+    }
+
+    pi = (long double) 4 * ins;
+    pi = (long double) pi / (long double) n;
+
+    return pi;
+}
+%   \end{lstlisting}
+% \end{macro}
+%\iffalse
+%<*c>
+
+%</c>
+%\fi
+%
+%\input{pi-at-monte-carlo-result.tex}
+%
+%{\centering\section*{Desenvolvendo um caso geral}}
+%
+%\upperletter Para facilitar o desenvolvimento dos algoritmos para calcular $\arctg$ vamos realizar um caso geral, onde iremos adotar o valor para $x$ sendo igual a $1/a$, pois em todas as fórmulas utilizadas é usado $\arctg$ do tipo $\arctg{1/a}$.
+%Então, podemos desenvolver a série da função $\arctg$ da seguinte maneira:
+%
+%
+%\begin{equation*}
+%   \begin{split}
+%A \cdot \arctg{x}=&A \cdot\sum_{k=0}^{n}\left(\left(-1\right)^k\frac{x^{2k+1}}{2k+1}\right)+A\cdot R_n\left(x\right)\Rightarrow \\ 
+%\Rightarrow A\cdot\arctg{\left(\frac{1}{a}\right)}=&A\cdot\sum_{k=0}^{n}\left(\left(-1\right)^k\frac{\left(\frac{1}{a}\right)^{2k+1}}{2k+1}\right)+A\cdot R_n\left(\frac{1}{a}\right) \\
+%=&A\cdot\underbrace{\sum_{k=0}^{n}\left(\left(-1\right)^k\frac{1}{a^{2k+1}}\cdot\frac{1}{2k+1}\right)}_{\displaystyle P_n\left(\frac{1}{a}\right)}+A\cdot R_n\left(\frac{1}{a}\right) \\ \\
+%P_n\left(\frac{1}{a}\right)=&\frac{1}{a}-\frac{1}{3a^3}+\frac{1}{5a^5}+\frac{1}{7a^7}-\frac{1}{9a^9}+\frac{1}{11a^{11}}+\dots+ \\
+%& \qquad\qquad\qquad\qquad+ \frac{1}{\left(2n+1\right)\cdot a^{2n+1}}-\frac{1}{\left(2n+3\right)\cdot a^{2n+3}}
+%   \end{split}
+%\end{equation*}%
+%
+%\begin{equation*}
+%   \begin{split}
+%&\frac{1}{\left(2n+1\right)\cdot a^{2n+1}}-\frac{1}{\left(2n+3\right)\cdot a^{2n+3}}=\\
+%=&\frac{\left(2n+3\right)\cdot a^{2n+3}-\left(2n+1\right)\cdot a^{2n+1}}{\left(2n+1\right)\cdot a^{2n+1}\cdot\left(2n+3\right)\cdot a^{2n+3}} = \\
+%=&\frac{\left(2n+3\right)\cdot a^2-\left(2n+1\right)}{\left(2n+1\right)\cdot\left(2n+3\right)\cdot a^{2n+3}}\text{, usando que $n=2k$, temos,}\\
+%=&\frac{\left(4k+3\right)\cdot a^2-\left(4k+1\right)}{\left(4k+1\right)\cdot\left(4k+3\right)\cdot a^{4k+3}}
+%   \end{split}
+%\end{equation*}%
+%
+%\begin{equation*}
+%   \begin{split}
+%P_n\left(\frac{1}{a}\right)=&\sum_{k=0}^{n}\left(\frac{\left(4k+3\right)\cdot a^2-\left(4k+1\right)}{\left(4k+1\right)\cdot\left(4k+3\right)\cdot a^{4k+3}}\right)\\
+%=&\sum_{k=0}^{n}\left(\frac{\left(i+3\right)\cdot a^2-\left(i+1\right)}{\left(i+1\right)\cdot\left(i+3\right)\cdot a^{i+3}}\right)\text{, } i{+}{=}4
+%   \end{split}
+%\end{equation*}%
+%
+%\begin{macro}{generalArctg()}
+%
+%\iffalse
+%<*c>
+/**
+ * @brief calcula o valor de pi usando o metodo de Monte Carlo
+ * 
+ * @param n quantidade de iteracoes desejado
+ * @return long double pi
+ */
+%</c>
+%\fi
+%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+long double generalArctg(unsigned long int n, unsigned long int a) {
+    unsigned long int pow, aux_pow, numerator, quotient;
+    long double res;
+
+    pow = a * a * a;
+    aux_pow = a * a * a * a;
+    res = 0;
+
+    int i;
+    for (i = 0; i < n; i+=4) {
+        numerator = (unsigned long int) (i + 3) * (a * a) - (i + 1);
+        quotient = (unsigned long int) (i + 1) * (i + 3) * pow;
+        res += (long double) numerator / quotient;
+
+        pow *= aux_pow;
+    }
+
+    return res;
+}
+%   \end{lstlisting}
+% \end{macro}
+%\iffalse
+%<*c>
+
+%</c>
+%\fi
+%
+%\begin{equation*}
+%   \begin{split}
+% \left \lvert R_n\left(\frac{1}{a}\right) \right \rvert \leq& \frac{\left(\frac{1}{a}\right)^{2n+3}}{2n+3} \\ \\
+% A \cdot \frac{1}{a^{2n+3}} \cdot \frac{1}{2n+3}<&A \cdot \frac{1}{a^{2n+3}} \cdot \frac{1}{2\cdot\left(n+1\right)}\overset{?}{<}\epsilon \\
+% \frac{1}{\epsilon}\cdot\frac{A}{2a}<&a^{2\cdot\left(n+1\right)}\cdot\left(n+1\right)
+%   \end{split}
+%\end{equation*}%
+%
+% Como $\epsilon=10^{-d}$, tem-se: $\displaystyle 10^{d}\cdot\frac{A}{2a}<a^{2\cdot\left(n+1\right)}\cdot\left(n+1\right)$, sendo $n$ então a quantidade de iterações necessárias.
+%
+% \begin{macro}{generalErrorHandle()}
+%\iffalse
+%<*c>
+/**
+ * @brief Erro para o calculo do A*arctg(1/a)
+ * 
+ * @param d expoente usado para o erro
+ * @param A valor a ser multiplicado
+ * @param a quociente do valor do arctg
+ * @return unsigned long int quantidade de iteracoes necessarias 
+ * para o erro
+ */
+%</c>
+%\fi
+%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, unsigned long int a) {
+    unsigned long int n, err, small, pow, aux_pow;
+
+    n = 0;
+    err = 1;
+
+    aux_pow = a * a;
+    pow = aux_pow;
+
+    int i;
+    for (i = 0; i < d; i++) {
+        err *= 10;
+    }
+
+    small = err * A / (2 * a);
+
+    while (small >= (unsigned long int) pow * (n + 1)) {
+        pow *= aux_pow;
+        n++;
+    }
+
+    return n;
+}
+%    \end{lstlisting}
+% \end{macro}
+%\iffalse
+%<*c>
+
+%</c>
+%\fi
+%
+%Porém utilizando essas funções para $\pi/4=\arctg{(1)}$ o maior 
+% erro que conseguimos alcançar, devido às limitações dos tipos utilizados 
+% (\verb|unsigned long int| e \verb|long double|) nas funções, é 
+% $\epsilon=10^{-9}$.
+% Então é necessário utilizar funções para cálculos de precisão arbitrária, 
+% sendo, nesse caso, utilizado a biblioteca \textit{GNU MPFR}, uma 
+% biblioteca \textit{C} para cálculos de ponto flutuante de precisão múltipla com 
+% arredondamento correto, é baseado na biblioteca 
+% \textit{GNU Multiple Precision Arithmetic} (\textit{GMP}).
+%
+%{\centering\subsection*{Usando \textit{MPFR} e \textit{GMP}}}
+%
+%\begin{macro}{generalArctg\_mpfr()}
+%Substituindo os tipos tradicionais pelos utilizados nas bibliotecas, temos:
+%
+%\iffalse
+%<*c>
+/**
+ * @brief calcula o valor do arctg(1/a) com n iteracoes usando o 
+ * pacote gmp
+ * 
+ * @param n quantidade de iteracoes desejado
+ * @param a quociente do valor do arctg
+ * @param res arctg(1/a)
+ */
+%</c>
+%\fi
+%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+void generalArctg_mpfr(const mpz_t n, unsigned long int a, mpfr_t res) {
+    mpfr_set_ui(res, 0, DEFAULT_ROUND);
+
+    mpz_t i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient;
+    mpz_inits(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient, NULL);
+
+    mpz_set_ui(a_gmp, a);
+    mpz_pow_ui(aux_pow_4, a_gmp, 4); // aux = a^4
+    mpz_pow_ui(aux_pow_2, a_gmp, 2); // aux = a^4
+    mpz_pow_ui(pow, a_gmp, 3); // pow = a^3
+
+    mpfr_t frac, numerator_mpfr, quotient_mpfr;
+    mpfr_inits(frac, numerator_mpfr, quotient_mpfr, NULL);
+
+    for (mpz_set_ui(i, 0); mpz_cmp(i, n) < 0; mpz_add_ui(i, i, 4)) { // for (int i = 0; i < n; i+=4) {...}
+        mpz_add_ui(i_1, i, 1); // i + 1
+        mpz_add_ui(i_3, i, 3); // i + 3
+
+        // numerator
+        mpz_mul(numerator, i_3, aux_pow_2); // (i + 3) * a^2
+        mpz_sub(numerator, numerator, i_1); // (i + 3) * a^2 - (i + 1)
+
+        // quocient
+        mpz_mul(quotient, i_1, i_3); // (i + 1) * (i + 3)
+        mpz_mul(quotient, quotient, pow); // (i + 1) * (i + 3) * a^{i+3}
+
+        mpfr_init_set_z(numerator_mpfr, numerator, DEFAULT_ROUND);
+        mpfr_init_set_z(quotient_mpfr, quotient, DEFAULT_ROUND);
+        
+        mpfr_div(frac, numerator_mpfr, quotient_mpfr, DEFAULT_ROUND); // frac = numerator / quotient
+        mpfr_add(res, res, frac, DEFAULT_ROUND); // res += frac
+
+        mpz_mul(pow, pow, aux_pow_4); // pow *= a^4
+    }
+    mpz_clears(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, NULL);
+
+    mpfr_clears(frac, numerator_mpfr, quotient_mpfr, NULL);
+}
+%    \end{lstlisting}
+% \end{macro}
+%\iffalse
+%<*c>
+
+%</c>
+%\fi
+%
+% \begin{macro}{generalErrorHandle\_gmp()}
+%\iffalse
+%<*c>
+/**
+ * @brief Erro para o calculo do A*arctg(1/a)
+ * 
+ * @param d expoente usado para o erro
+ * @param A valor a ser multiplicado
+ * @param a quociente do valor do arctg
+ * @param n quantidade de iteracoes necessarias para o erro
+ */
+%</c>
+%\fi
+%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+void generalErrorHandle_gmp(unsigned long int d, unsigned long int A, unsigned long int a, mpz_t n) {
+    mpz_set_ui(n, 0);
+
+    mpz_t err, aux_pow, pow, aux_cmp;
+    mpz_inits(err, aux_pow, pow, aux_cmp, NULL);
+    mpz_set_ui(err, 1);
+
+    for (int i = 0; i < d; i++) {
+        mpz_mul_ui(err, err, 10);
+    }
+
+    mpz_mul_ui(err, err, A);
+    mpz_div_ui(err, err, 2 * a);
+
+    mpz_set_ui(aux_pow, a);
+    mpz_set(pow, aux_pow);
+
+    mpz_set(aux_cmp, pow);
+    mpz_mul(aux_cmp, aux_cmp, n);
+    while (mpz_cmp(err, aux_cmp) > 0) {  // err >= aux_cmp
+        mpz_mul(pow, pow, aux_pow);
+        mpz_set(aux_cmp, pow);
+        mpz_add_ui(n, n, 1);
+        mpz_mul(aux_cmp, aux_cmp, n);
+    }
+
+    mpz_clears(err, aux_pow, pow, aux_cmp, NULL);
+}
+%    \end{lstlisting}
+% \end{macro}
+%\iffalse
+%<*c>
+
+/**
+ * @brief 
+ * 
+ * @param arctg_a resultado do arctg
+ * @param d expoente usado para o erro
+ * @param A valor a ser multiplicado
+ * @param a quociente do valor do arctg
+ */
+void generalArctgWithError_mpfr(mpfr_t arctg_a, unsigned long int d, unsigned long int A, unsigned long int a) {
+    // A*arctg(1/a)
+    mpz_t n_a;
+    mpz_init(n_a);
+    generalErrorHandle_gmp(d, A, a, n_a);
+
+    mpfr_init(arctg_a);
+    generalArctg_mpfr(n_a, a, arctg_a);
+    mpfr_mul_ui(arctg_a, arctg_a, A, DEFAULT_ROUND);
+
+    #ifdef __DEBUG__
+        printf("\n");
+        printf("%ld*arctg(1/%ld)=", A, a);
+        mpfr_printf("%.*Rf\n", mpfr_get_prec(arctg_a), arctg_a);
+        gmp_printf("\tinteractions %Zd\n", n_a);
+        printf("\n");
+    #endif
+
+    mpz_clear(n_a);
+}
+
+%</c>
+%\fi
+%
+%{\centering\subsection*{Fórmula de \textit{Machin} Original}}
+%
+%\begin{macro}{machin()}
+%Função \verb|machin| resolvendo a \textit{Fórmula de Machin Original}:
+%
+%\begin{equation*}
+%\frac{\pi}{4}=4\cdot\arctg{\frac{1}{5}}-\arctg{\frac{1}{239}}
+%\end{equation*}
+%
+%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+void machin(unsigned long long err, mpfr_t pi) {
+    mpfr_t arctg_5;
+    generalArctgWithError_mpfr(arctg_5, err, 4, 5);
+
+    mpfr_t arctg_239;
+    generalArctgWithError_mpfr(arctg_239, err, 1, 239);
+
+    mpfr_sub(pi, arctg_5, arctg_239, DEFAULT_ROUND);
+    mpfr_mul_ui(pi, pi, 4, DEFAULT_ROUND);
+
+    mpfr_clears(arctg_5, arctg_239, NULL);
+}
+%    \end{lstlisting}
+% \end{macro}
+%\iffalse
+%<*c>
+
+%</c>
+%\fi
+%
+% Dessa maneira, conseguimos alcançar facilmente as $100$ (cem) primeiras casas decimais de $\pi$ desejadas usando a Fórmula de Machin Original.
+% Sendo, $\pi_n$, $n$ a quantidade de casas decimais, temos:
+%
+% \input{generated/pi_machin.tex}
+%
+% \newpage
+% \newgeometry{top=3cm,bottom=\dimexpr2.0cm+5pt\relax,left=1cm,right=1cm}
+% \thispagestyle{empty}
+% \begin{figure}[t]
+% \includegraphics[angle=90,origin=c,width=0.9\textwidth,height=0.9\textheight,keepaspectratio]{generated/Plot}
+% \centering
+% \end{figure}
+% \restoregeometry
+%
+%{\centering\subsection*{Fórmula de \textit{Kikuo Takano}}}
+%\begin{macro}{takano()}
+%Função \verb|takano| resolvendo a \textit{Fórmula de Kikuo Takano}:
+%
+%\begin{equation*}
+% \frac{\pi}{4}=12\cdot\arctg{\frac{1}{49}}+32\cdot\frac{1}{57}-5\cdot\frac{1}{239}+12\cdot\arctg{\frac{1}{110{.}443}} \tag{K. Takano, 1982}
+%\end{equation*}
+%
+%\begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+void takano(unsigned long long err, mpfr_t pi) {
+    mpfr_t arctg_49;
+    generalArctgWithError_mpfr(arctg_49, err, 12, 49);
+
+    mpfr_t arctg_57;
+    generalArctgWithError_mpfr(arctg_57, err, 32, 57);
+
+    mpfr_t arctg_239;
+    generalArctgWithError_mpfr(arctg_239, err, 5, 239);
+
+    mpfr_t arctg_110443;
+    generalArctgWithError_mpfr(arctg_110443, err, 12, 110443);
+
+    mpfr_add(pi, arctg_49, arctg_57, DEFAULT_ROUND);
+    mpfr_sub(pi, pi, arctg_239, DEFAULT_ROUND);
+    mpfr_add(pi, pi, arctg_110443, DEFAULT_ROUND);
+    mpfr_mul_ui(pi, pi, 4, DEFAULT_ROUND);
+
+    mpfr_clears(arctg_49, arctg_57, arctg_239, arctg_110443, NULL);
+}
+%\end{lstlisting}
+%\end{macro}
+%\iffalse
+%<*c>
+
+%</c>
+%\fi
+%
+%\input{generated/pi_takano.tex}
+%
+%{\centering\subsection*{Fórmula de \textit{Fredrik Carl M\"{u}lertz St{\o}rmer}}}
+%\begin{macro}{stormer()}
+%Função \verb|stormer| resolvendo a \textit{Fórmula de Fredrik Carl M\"{u}lertz St{\o}rmer}:
+%
+%\begin{equation*}
+% \frac{\pi}{4}=44\cdot\arctg{\frac{1}{57}}+7\cdot\frac{1}{239}-12\cdot\frac{1}{682}+24\cdot\arctg{\frac{1}{12{.}943}} \tag{F. C. M. St{\o}rmer, 1896}
+%\end{equation*}
+%
+%\begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+void stormer(unsigned long long err, mpfr_t pi) {
+    mpfr_t arctg_57;
+    generalArctgWithError_mpfr(arctg_57, err, 44, 57);
+
+    mpfr_t arctg_239;
+    generalArctgWithError_mpfr(arctg_239, err, 7, 239);
+
+    mpfr_t arctg_682;
+    generalArctgWithError_mpfr(arctg_682, err, 12, 682);
+
+    mpfr_t arctg_12943;
+    generalArctgWithError_mpfr(arctg_12943, err, 24, 12943);
+
+    mpfr_add(pi, arctg_57, arctg_239, DEFAULT_ROUND);
+    mpfr_sub(pi, pi, arctg_682, DEFAULT_ROUND);
+    mpfr_add(pi, pi, arctg_12943, DEFAULT_ROUND);
+    mpfr_mul_ui(pi, pi, 4, DEFAULT_ROUND);
+
+    mpfr_clears(arctg_57, arctg_239, arctg_682, arctg_12943, NULL);
+}
+%    \end{lstlisting}
+% \end{macro}
+%\iffalse
+%<*c>
+
+%</c>
+%\fi
+%
+% \input{generated/pi_stormer.tex}
+%
+%\iffalse
+%<*c>
+int main(int argc, char* argv[]) {
+    #ifdef DEBUG
+        double start, stop;
+    #endif
+    unsigned long long err;
+    char method = '\0';
+    err = 100; 
+
+    if(argc > 1) {
+        method = argv[1][0];
+        char *stopstring;
+        err = strtoul(argv[2], &stopstring, 10);
+    }
+
+    #ifdef DEBUG
+        printf("err=%lld", err);
+    #endif
+
+    err += 5; // para garantir a quantidade de 100 casas decimais corretas
+    mpfr_set_default_prec(err*5); // para garantir todos os calculos
+
+    long double pi_double;
+    pi_double = 0.0;
+    mpfr_t pi;
+    mpfr_init(pi);
+
+    #ifdef DEBUG
+        start = time_as_double();
+    #endif
+    switch (method) {
+        case 'c':
+            pi_double = monteCarlo(err);
+            mpfr_set_ld(pi, pi_double, DEFAULT_ROUND);
+            break;
+        case 'm':
+            machin(err, pi);
+            break;
+        case 't':
+            takano(err, pi);
+            break;
+        case 's':
+            stormer(err, pi);
+            break;
+        default:
+            machin(err, pi);
+    }
+    #ifdef DEBUG
+        stop = time_as_double();
+    #endif
+
+    if (pi_double > 0.0) {
+        printf("%12.10Lf\n", pi_double);
+    } else {
+        #ifdef DEBUG
+            printf("method is %c\n", method);
+            mpfr_printf("%.*Rf\n", mpfr_get_prec(pi), pi);
+            printf("%5.15f segundos\n\n", (stop - start));
+        #else
+            mpfr_printf("%.*Rf\n", mpfr_get_prec(pi), pi);
+        #endif
+    }
+
+    mpfr_clear(pi);
+    mpfr_free_cache();
+
+    return 0;
+}
+%</c>
+%\fi
+%
+%\bibliographystyle{abnt}
+%\bibliography{references}
+%
+%\Finale

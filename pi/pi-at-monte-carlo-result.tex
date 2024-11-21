@@ -1,0 +1,79 @@
+\begin{figure}[H]
+   \centering
+   \caption{Convergência para o método de \textit{Monte Carlo}}
+   \includegraphics[width=0.9\textwidth,keepaspectratio]{generated/plot_monteCarlo}
+   \label{fig:convergence_monteCalor}
+\end{figure}%
+
+Observando que os valores coletados na \autoref{fig:convergence_monteCalor} convergem com flutuações nos valores, pois os valores são obtidos de forma aleatória. Então, podemos interpretar estatisticamente este resultado realizando uma hipótese de normalidade na amostra.
+ 
+Temos, um histograma:
+
+\begin{figure}[H]
+   \centering
+   \caption{Histograma dos valores obtidos no método de \textit{Monte Carlo}, com curva de densidade, aplicado à coleta de $\pi$}
+   \includegraphics[width=0.95\columnwidth]{generated/histogram_monteCarlo}
+   \label{fig:histogram_monteCalor}
+\end{figure}%
+
+Devido às propriedades do gráfico, temos:
+\begin{itemize}
+   \item O ponto $x = \mu$ é um ponto de máximo absoluto, sendo o único ponto crítico do gráfico, sendo representado pela linha pontilhada central da \autoref{fig:histogram_monteCalor}
+   \item Possui dois pontos de inflexão $x = \mu - \sigma$ e $x = \mu - \sigma$, sendo representado pelas linhas pontilhadas nas extremidades do gráfico.
+   \item A área entre $\mu \pm \sigma$ representa $68\%$ da área total do gráfico, ou seja, $68\%$ dos valores de $\pi$ estão presentes nesse intervalo.
+\end{itemize}
+Sendo:
+$mean(var)$, média aritmética dos valores de $\pi$ obtidos.
+\begin{gather*}
+   var = \{x_{1},\ x_{2},\ \dots,\ x_{n}\} \\
+   \mu = \bar{var} = \frac{1}{n} \sum_{i=1}^{n} x_{i} = \frac{x_{1} + x_{2} + \dots + x_{n}}{n}
+\end{gather*}
+
+$sd(var)$, desvio padrão dos valores obtidos, ou seja, medida de dispersão com as mesmas unidades que a amostra.
+\begin{gather*}
+   \sigma = sd = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}\left(x_{i}-\bar{var}\right)^{2}}
+\end{gather*}
+
+$sd(var) / sqrt(m)$, desvio padrão da média ($\bar{var}$), no limite para $m$ grande. O desvio padrão da média ($\xi$) caracteriza as flutuações dos valores $\bar{var}_{i}$ em torna da média população $\mu$.
+\begin{gather*}
+   \xi = \frac{\sigma}{\sqrt{m}}
+\end{gather*}
+
+E realizando testes estatísticos nos dados para determinar se os dados afastam ou não da distribuição normal.
+
+\begin{lstlisting}[name=coding_at_monte_carlo,language=R,style=macrocode,numbers=none]
+shapiro.test(var)
+\end{lstlisting}
+\begin{lstlisting}[name=coding_at_monte_carlo,style=macrocode,frame=single,numbers=none]
+[1]	Shapiro-Wilk normality test
+
+data:  var
+W = 0.9987, p-value = 0.6886
+\end{lstlisting}
+
+Observando que o $valor-p$ retornado pelo teste é maior que $0{,}05$, fortalecendo a hipótese que os dados são normalmente distribuídos.
+
+Além disso, tem-se:
+\begin{lstlisting}[name=coding_at_monte_carlo,language=R,style=macrocode,numbers=none]
+library(nortest)
+ad.test(var)
+\end{lstlisting}
+\begin{lstlisting}[name=coding_at_monte_carlo,style=macrocode,frame=single,numbers=none]
+[1]   Anderson-Darling normality test
+
+data:  var
+A = 0.2726, p-value = 0.6684
+\end{lstlisting}
+
+\begin{lstlisting}[name=coding_at_monte_carlo,language=R,style=macrocode,numbers=none]
+ks.test(var, "pnorm", mean(var), sd(var))
+\end{lstlisting}
+\begin{lstlisting}[name=coding_at_monte_carlo,style=macrocode,frame=single,numbers=none]
+[1]	Asymptotic one-sample Kolmogorov-Smirnov test
+
+data:  var
+D = 0.015002, p-value = 0.978
+alternative hypothesis: two-sided
+\end{lstlisting}
+
+O $valor-p$ em todos os testes anteriores foram superiores que $0{,}05$, fortalecendo a nossa hipótese inicial de que a normalidade não é rejeitada, como demonstrado na \autoref{fig:histogram_monteCalor}. Então, apresentando erros de medição aleatórios.

@@ -1,0 +1,32 @@
+{
+    "files.exclude": {
+        "**/*.aux": true,
+        "**/*.lof": true,
+        "**/*.log": true,
+        "**/*.lot": true,
+        "**/*.toc": true,
+        "**/*.out": true,
+        "**/*.glo": true,
+        "**/*.gls": true,
+        "**/*.hd": true,
+        "**/*.ilg": true,
+        "**/*.bbl": true,
+        "**/*.blg": true,
+        "**/*.brf" : true
+
+    },
+    "[latex]": {
+        "editor.wordWrap": "on",
+    },
+    "[tex]": {
+        "editor.wordWrap": "on",
+    },
+    "workbench.editor.autoLockGroups": {
+        "pdf.preview": true
+    },
+    
+    "files.associations": {
+        "*.dtx": "latex",
+        "*.ins": "latex",
+    },
+}

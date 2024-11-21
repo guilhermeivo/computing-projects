@@ -1,0 +1,10 @@
+\input docstrip.tex
+\keepsilent
+
+\def\MetaPrefix{// }
+\generate{\usepreamble\empty
+\usepostamble\empty
+\file{generated/\jobname.c}{\from{\jobname.dtx}{c}}}
+
+\endbatchfile 
+% EOF
