@@ -1,3 +1,5 @@
+par(family = "serif")
+
 cex_size <- 2
 pdf("generated/plot.pdf", width = 22.56, height = 16)
 dat <- read.table("generated/pi_machin.dat")

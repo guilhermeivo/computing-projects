@@ -38,6 +38,7 @@ then
         printf "$i $("$BIN" c $i 2>/dev/null | tail -1 )\n"
     done > "$FOLDER""pi_monteCarlo_convergence.dat"
 
+    MAX=200
     for i in $(seq $MAX)
     do
         printf "$i $("$BIN" c 100000 2>/dev/null | tail -1 )\n"
@@ -63,7 +64,7 @@ then
     echo "\noindent\$\pi_{$MAX}\;=\;$out\$" > "$FOLDER""pi_stormer.tex"
 fi
 
-R -e "source('script_convergence.R'); source('script_histogram.R'); source('script.R')"
+R -e "source('data/script_convergence.R'); source('data/script_histogram.R'); source('data/script.R')"
 
 pdflatex --draftmode $DOCSTRIP.dtx
 
