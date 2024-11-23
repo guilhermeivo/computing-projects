@@ -63,7 +63,7 @@ then
     echo "\noindent\$\pi_{$MAX}\;=\;$out\$" > "$FOLDER""pi_stormer.tex"
 fi
 
-R -e "source('script.R')"
+R -e "source('script_convergence.R'); source('script_histogram.R'); source('script.R')"
 
 pdflatex --draftmode $DOCSTRIP.dtx
 

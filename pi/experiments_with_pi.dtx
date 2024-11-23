@@ -29,17 +29,17 @@
     \usepackage{parskip}
 
     \usepackage{tikz}
+
     %
     %\CodelineIndex
     \DeclareMathOperator{\arctg}{arctg}
     \makeatletter
+
+    \renewcommand{\lstlistingname}{Código}
+    \renewcommand{\lstlistlistingname}{Lista de \lstlistingname s}
     \lstdefinestyle{macrocode}{
-        name=macrocode,
-        language = C++,
+        language = c,
         % Colors
-        keywordstyle    = \color{violet},
-        stringstyle     = \color{red},
-        commentstyle    = \color{gray},
         backgroundcolor = \color{white},
         rulesepcolor    = \color{darkgray}, 
         identifierstyle = \color{black},
@@ -55,13 +55,13 @@
         frame           = shadowbox,
         breaklines      = true,
         breakautoindent = true,
-        captionpos      = b,
         xleftmargin     = 25pt,
         xrightmargin    = 25pt,
         aboveskip       = 10pt,
         belowskip       = 10pt,
         belowcaptionskip = 5pt,
         captionpos      = t,
+        morekeywords    = {mpfr_t, mpz_t},
         % Caracteres especiais
         literate =
         {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
@@ -75,21 +75,6 @@
         {Ã}{{\~A}}1 {Ẽ}{{\~E}}1 {Ĩ}{{\~I}}1 {Õ}{{\~O}}1 {Ũ}{{\~U}}1
         {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
         {ç}{{\c c}}1 {Ç}{{\c C}}1
-    }
-
-    \def\thebibliography#1{%
-        \newpage%
-        \phantomsection%
-        \addcontentsline{toc}{section}{\protect\numberline{}\refname}%
-
-        {\centering\section*{\refname}}%
-        \list{\@biblabel{\arabic{enumi}}}%
-            {\settowidth\labelwidth{(#1)}%
-            \leftmargin\labelwidth\advance\leftmargin\labelsep%
-                \usecounter{enumi}%
-            }%
-        \def\newblock{\hskip .11em plus .33em minus .07em}%
-        \sloppy\clubpenalty4000\widowpenalty4000\sfcode`\.=1000\relax%
     }
 
     %% BEGIN UPPERLETTER
@@ -143,7 +128,7 @@
     \renewcommand{\section}{\@startsection {section}{1}{\z@}%
         {-3.5ex \@plus -1ex \@minus -.2ex}%
         {2.3ex \@plus .2ex}%
-        {\normalfont\LARGE\scshape\bfseries}%
+        {\centering\normalfont\LARGE\scshape\bfseries}%
     }
     \renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
         {-3.25ex\@plus -1ex \@minus -.2ex}%
@@ -163,6 +148,20 @@
         pdftitle = {\@title},
         pdfauthor = {\@author},
         pdfcreator = {\LaTeX}
+    }
+
+    \newenvironment{appendixenv}[1][\@empty]{
+        \begingroup
+        \thispagestyle{empty}
+        \appendix
+        \cleardoublepage
+        \vspace*{\fill}
+        {\centering\part*{\centering\scshape\Huge#1}}
+        \vspace*{\fill}
+        \newpage
+    }{%
+        \endgroup
+        \newpage
     }
 
     \makeatother
@@ -208,7 +207,7 @@
 %
 %\noindent Queremos implementar algoritmos para calcular o valor de $\pi$ usando métodos computacionais.
 %
-%{\centering\section*{Pi usando Monte Carlo}}
+%\section*{Pi usando Monte Carlo}
 %
 %\upperletter O método de Monte Carlo é uma técnica de amostragem estatística, teve seu desencadeamento após o desenvolvimento do \textit{ENIAC}\footnote{O ENIAC produziu $2{,}037$ dígitos de $\pi$ em $70$ horas em $1949$ usando a \textit{Fórmula de Machin\index{John Machin!Fórmula de Machin}}\cite[p.~592 e 627]{pi-source-book}}, primeiro computador eletrônico, desenvolvido durante a Segunda Guerra Mundial, para lidar com grandes cálculos. O método baseia-se em números ``aleatórios'' para resolver os seus problemas que é aplicada com sucesso em diversos problemas contemporâneos \cite{special-issue}.
 %
@@ -254,7 +253,7 @@
  */
 %</c>
 %\fi
-%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c,numbers=none]
+%    \begin{lstlisting}[style=macrocode,escapechar=\%,numbers=none]
 long double monteCarlo(unsigned long long n) {
     unsigned long long ins;  
     ins = 0;  
@@ -287,7 +286,8 @@ long double monteCarlo(unsigned long long n) {
 %
 %\input{pi-at-monte-carlo-result.tex}
 %
-%{\centering\section*{Desenvolvendo um caso geral}}
+%\cleardoublepage
+%\section*{Desenvolvendo um caso geral}
 %
 %\upperletter Para facilitar o desenvolvimento dos algoritmos para calcular $\arctg$ vamos realizar um caso geral, onde iremos adotar o valor para $x$ sendo igual a $1/a$, pois em todas as fórmulas utilizadas é usado $\arctg$ do tipo $\arctg{1/a}$.
 %Então, podemos desenvolver a série da função $\arctg$ da seguinte maneira:
@@ -331,7 +331,7 @@ long double monteCarlo(unsigned long long n) {
  */
 %</c>
 %\fi
-%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+%    \begin{lstlisting}[style=macrocode,escapechar=\%]
 long double generalArctg(unsigned long int n, unsigned long int a) {
     unsigned long int pow, aux_pow, numerator, quotient;
     long double res;
@@ -383,7 +383,7 @@ long double generalArctg(unsigned long int n, unsigned long int a) {
  */
 %</c>
 %\fi
-%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+%    \begin{lstlisting}[style=macrocode,escapechar=\%]
 unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, unsigned long int a) {
     unsigned long int n, err, small, pow, aux_pow;
 
@@ -425,7 +425,7 @@ unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, u
 % arredondamento correto, é baseado na biblioteca 
 % \textit{GNU Multiple Precision Arithmetic} (\textit{GMP}).
 %
-%{\centering\subsection*{Usando \textit{MPFR} e \textit{GMP}}}
+%\subsection*{Usando \textit{MPFR} e \textit{GMP}}
 %
 %\begin{macro}{generalArctg\_mpfr()}
 %Substituindo os tipos tradicionais pelos utilizados nas bibliotecas, temos:
@@ -442,7 +442,7 @@ unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, u
  */
 %</c>
 %\fi
-%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+%    \begin{lstlisting}[style=macrocode,escapechar=\%]
 void generalArctg_mpfr(const mpz_t n, unsigned long int a, mpfr_t res) {
     mpfr_set_ui(res, 0, DEFAULT_ROUND);
 
@@ -502,7 +502,7 @@ void generalArctg_mpfr(const mpz_t n, unsigned long int a, mpfr_t res) {
  */
 %</c>
 %\fi
-%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+%    \begin{lstlisting}[style=macrocode,escapechar=\%]
 void generalErrorHandle_gmp(unsigned long int d, unsigned long int A, unsigned long int a, mpz_t n) {
     mpz_set_ui(n, 0);
 
@@ -568,7 +568,7 @@ void generalArctgWithError_mpfr(mpfr_t arctg_a, unsigned long int d, unsigned lo
 %</c>
 %\fi
 %
-%{\centering\subsection*{Fórmula de \textit{Machin} Original}}
+%\subsection*{Fórmula de \textit{Machin} Original}
 %
 %\begin{macro}{machin()}
 %Função \verb|machin| resolvendo a \textit{Fórmula de Machin Original}:
@@ -577,7 +577,7 @@ void generalArctgWithError_mpfr(mpfr_t arctg_a, unsigned long int d, unsigned lo
 %\frac{\pi}{4}=4\cdot\arctg{\frac{1}{5}}-\arctg{\frac{1}{239}}
 %\end{equation*}
 %
-%    \begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+%    \begin{lstlisting}[style=macrocode,escapechar=\%]
 void machin(unsigned long long err, mpfr_t pi) {
     mpfr_t arctg_5;
     generalArctgWithError_mpfr(arctg_5, err, 4, 5);
@@ -598,11 +598,6 @@ void machin(unsigned long long err, mpfr_t pi) {
 %</c>
 %\fi
 %
-% Dessa maneira, conseguimos alcançar facilmente as $100$ (cem) primeiras casas decimais de $\pi$ desejadas usando a Fórmula de Machin Original.
-% Sendo, $\pi_n$, $n$ a quantidade de casas decimais, temos:
-%
-% \input{generated/pi_machin.tex}
-%
 % \newpage
 % \newgeometry{top=3cm,bottom=\dimexpr2.0cm+5pt\relax,left=1cm,right=1cm}
 % \thispagestyle{empty}
@@ -612,7 +607,7 @@ void machin(unsigned long long err, mpfr_t pi) {
 % \end{figure}
 % \restoregeometry
 %
-%{\centering\subsection*{Fórmula de \textit{Kikuo Takano}}}
+%\subsection*{Fórmula de \textit{Kikuo Takano}}
 %\begin{macro}{takano()}
 %Função \verb|takano| resolvendo a \textit{Fórmula de Kikuo Takano}:
 %
@@ -620,7 +615,7 @@ void machin(unsigned long long err, mpfr_t pi) {
 % \frac{\pi}{4}=12\cdot\arctg{\frac{1}{49}}+32\cdot\frac{1}{57}-5\cdot\frac{1}{239}+12\cdot\arctg{\frac{1}{110{.}443}} \tag{K. Takano, 1982}
 %\end{equation*}
 %
-%\begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+%\begin{lstlisting}[style=macrocode,escapechar=\%]
 void takano(unsigned long long err, mpfr_t pi) {
     mpfr_t arctg_49;
     generalArctgWithError_mpfr(arctg_49, err, 12, 49);
@@ -649,9 +644,7 @@ void takano(unsigned long long err, mpfr_t pi) {
 %</c>
 %\fi
 %
-%\input{generated/pi_takano.tex}
-%
-%{\centering\subsection*{Fórmula de \textit{Fredrik Carl M\"{u}lertz St{\o}rmer}}}
+%\subsection*{Fórmula de \textit{Fredrik Carl M\"{u}lertz St{\o}rmer}}
 %\begin{macro}{stormer()}
 %Função \verb|stormer| resolvendo a \textit{Fórmula de Fredrik Carl M\"{u}lertz St{\o}rmer}:
 %
@@ -659,7 +652,7 @@ void takano(unsigned long long err, mpfr_t pi) {
 % \frac{\pi}{4}=44\cdot\arctg{\frac{1}{57}}+7\cdot\frac{1}{239}-12\cdot\frac{1}{682}+24\cdot\arctg{\frac{1}{12{.}943}} \tag{F. C. M. St{\o}rmer, 1896}
 %\end{equation*}
 %
-%\begin{lstlisting}[style=macrocode,escapechar=\%,language=c]
+%\begin{lstlisting}[style=macrocode,escapechar=\%]
 void stormer(unsigned long long err, mpfr_t pi) {
     mpfr_t arctg_57;
     generalArctgWithError_mpfr(arctg_57, err, 44, 57);
@@ -687,8 +680,6 @@ void stormer(unsigned long long err, mpfr_t pi) {
 
 %</c>
 %\fi
-%
-% \input{generated/pi_stormer.tex}
 %
 %\iffalse
 %<*c>
@@ -762,6 +753,9 @@ int main(int argc, char* argv[]) {
 %</c>
 %\fi
 %
+%\include{appendix}
+%
+%\cleardoublepage\thispagestyle{empty}
 %\bibliographystyle{abnt}
 %\bibliography{references}
 %
