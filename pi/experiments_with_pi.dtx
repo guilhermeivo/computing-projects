@@ -200,12 +200,12 @@
 #include <mpfr.h>
 #include "../timeclock.h"
 
-#define DEFAULT_ROUND MPFR_RNDN
-
 #define USE_MPFR
-//#define USE_MPF
+//#define USE_MPF // nao usa metodos de arredondamento
 
 #ifdef USE_MPFR
+    #define DEFAULT_ROUND MPFR_RNDN
+
     #define fp_set_default_prec mpfr_set_default_prec
     #define fp_get_prec mpfr_get_prec
 
