@@ -112,9 +112,12 @@
 
     \renewcommand{\maketitle}{
         {
+            \vspace*{2cm}
             \begin{center}
                 \expandafter\MakeUppercase\expandafter{\textbf{\Huge\@title}}
+                \@author
             \end{center}
+            \vspace*{2cm}
         }
     }
 
@@ -174,7 +177,7 @@
     \setlength{\parindent}{1.5cm}
 
     \title{Experimentos usando Pi}
-    \author{guilhermeivo}
+    \author{\url{https://github.com/guilhermeivo/computing-projects/}}
 
     \begin{document}
         \pagestyle{mainheadings}
@@ -270,11 +273,11 @@
 %           \draw [fill=gray!7] (0, 0) circle (3);
 %       \end{scope}
 %
-%       \draw [fill=red!75,draw=none] (0.35, 2.15) circle (0.1);
-%       \draw [fill=red!75,draw=none] (1.5, 1) circle (0.1);
-%       \draw [fill=red!75,draw=none] (1.6, 0.5) circle (0.1);
-%       \draw [fill=red!75,draw=none] (2, 0.35) circle (0.1);
-%       \draw [fill=red!75,draw=none] (2.65, 2.45) circle (0.1);
+%       \draw [fill=black,draw=none] (0.35, 2.15) circle (0.1);
+%       \draw [fill=black,draw=none] (1.5, 1) circle (0.1);
+%       \draw [fill=black,draw=none] (1.6, 0.5) circle (0.1);
+%       \draw [fill=black,draw=none] (2, 0.35) circle (0.1);
+%       \draw [fill=black,draw=none] (2.65, 2.45) circle (0.1);
 %
 %       \draw (3, 3) rectangle (0,0);
 %   \end{tikzpicture}%
