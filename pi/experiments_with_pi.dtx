@@ -61,7 +61,7 @@
         belowskip       = 10pt,
         belowcaptionskip = 5pt,
         captionpos      = t,
-        morekeywords    = {mpfr_t, mpz_t},
+        morekeywords    = {mpfr_t, mpz_t, fp_t},
         % Caracteres especiais
         literate =
         {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
@@ -201,6 +201,53 @@
 #include "../timeclock.h"
 
 #define DEFAULT_ROUND MPFR_RNDN
+
+#define USE_MPFR
+//#define USE_MPF
+
+#ifdef USE_MPFR
+    #define fp_set_default_prec mpfr_set_default_prec
+    #define fp_get_prec mpfr_get_prec
+
+    #define fp_init mpfr_init
+    #define fp_inits mpfr_inits
+
+    #define fp_set_ld(rop, op) mpfr_set_ld(rop, op, DEFAULT_ROUND)
+    #define fp_set_ui(rop, op) mpfr_set_ui(rop, op, DEFAULT_ROUND)
+    #define fp_set_z(rop, op) mpfr_set_z(rop, op, DEFAULT_ROUND)
+
+    #define fp_add(rop, op1, op2) mpfr_add(rop, op1, op2, DEFAULT_ROUND)
+    #define fp_sub(rop, op1, op2) mpfr_sub(rop, op1, op2, DEFAULT_ROUND)
+    #define fp_div(rop, op1, op2) mpfr_div(rop, op1, op2, DEFAULT_ROUND)
+
+    #define fp_mul_ui(rop, op1, op2) mpfr_mul_ui(rop, op1, op2, DEFAULT_ROUND)
+
+    #define fp_clear mpfr_clear
+    #define fp_clears mpfr_clears
+
+    typedef mpfr_t fp_t; // Floating-point Type
+#else
+    #define fp_set_default_prec mpf_set_default_prec
+    #define fp_get_prec mpf_get_prec
+
+    #define fp_init mpf_init
+    #define fp_inits mpf_inits
+
+    #define fp_set_ld(rop, op) mpf_set_d(rop, op)
+    #define fp_set_ui(rop, op) mpf_set_ui(rop, op)
+    #define fp_set_z(rop, op) mpf_set_z(rop, op)
+
+    #define fp_add(rop, op1, op2) mpf_add(rop, op1, op2)
+    #define fp_sub(rop, op1, op2) mpf_sub(rop, op1, op2)
+    #define fp_div(rop, op1, op2) mpf_div(rop, op1, op2)
+
+    #define fp_mul_ui(rop, op1, op2) mpf_mul_ui(rop, op1, op2)
+
+    #define fp_clear mpf_clear
+    #define fp_clears mpf_clears
+
+    typedef mpf_t fp_t; // Floating-point Type
+#endif
 
 %</c>
 %\fi
@@ -443,8 +490,8 @@ unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, u
 %</c>
 %\fi
 %    \begin{lstlisting}[style=macrocode,escapechar=\%]
-void generalArctg_mpfr(const mpz_t n, unsigned long int a, mpfr_t res) {
-    mpfr_set_ui(res, 0, DEFAULT_ROUND);
+void generalArctg_mpfr(const mpz_t n, unsigned long int a, fp_t res) {
+    fp_set_ui(res, 0);
 
     mpz_t i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient;
     mpz_inits(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient, NULL);
@@ -454,8 +501,8 @@ void generalArctg_mpfr(const mpz_t n, unsigned long int a, mpfr_t res) {
     mpz_pow_ui(aux_pow_2, a_gmp, 2); // aux = a^4
     mpz_pow_ui(pow, a_gmp, 3); // pow = a^3
 
-    mpfr_t frac, numerator_mpfr, quotient_mpfr;
-    mpfr_inits(frac, numerator_mpfr, quotient_mpfr, NULL);
+    fp_t frac, numerator_mpfr, quotient_mpfr;
+    fp_inits(frac, numerator_mpfr, quotient_mpfr, NULL);
 
     for (mpz_set_ui(i, 0); mpz_cmp(i, n) < 0; mpz_add_ui(i, i, 4)) { // for (int i = 0; i < n; i+=4) {...}
         mpz_add_ui(i_1, i, 1); // i + 1
@@ -469,17 +516,17 @@ void generalArctg_mpfr(const mpz_t n, unsigned long int a, mpfr_t res) {
         mpz_mul(quotient, i_1, i_3); // (i + 1) * (i + 3)
         mpz_mul(quotient, quotient, pow); // (i + 1) * (i + 3) * a^{i+3}
 
-        mpfr_init_set_z(numerator_mpfr, numerator, DEFAULT_ROUND);
-        mpfr_init_set_z(quotient_mpfr, quotient, DEFAULT_ROUND);
+        fp_set_z(numerator_mpfr, numerator);
+        fp_set_z(quotient_mpfr, quotient);
         
-        mpfr_div(frac, numerator_mpfr, quotient_mpfr, DEFAULT_ROUND); // frac = numerator / quotient
-        mpfr_add(res, res, frac, DEFAULT_ROUND); // res += frac
+        fp_div(frac, numerator_mpfr, quotient_mpfr); // frac = numerator / quotient
+        fp_add(res, res, frac); // res += frac
 
         mpz_mul(pow, pow, aux_pow_4); // pow *= a^4
     }
     mpz_clears(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, NULL);
 
-    mpfr_clears(frac, numerator_mpfr, quotient_mpfr, NULL);
+    fp_clears(frac, numerator_mpfr, quotient_mpfr, NULL);
 }
 %    \end{lstlisting}
 % \end{macro}
@@ -544,20 +591,24 @@ void generalErrorHandle_gmp(unsigned long int d, unsigned long int A, unsigned l
  * @param A valor a ser multiplicado
  * @param a quociente do valor do arctg
  */
-void generalArctgWithError_mpfr(mpfr_t arctg_a, unsigned long int d, unsigned long int A, unsigned long int a) {
+void generalArctgWithError_mpfr(fp_t arctg_a, unsigned long int d, unsigned long int A, unsigned long int a) {
     // A*arctg(1/a)
     mpz_t n_a;
     mpz_init(n_a);
     generalErrorHandle_gmp(d, A, a, n_a);
 
-    mpfr_init(arctg_a);
+    fp_init(arctg_a);
     generalArctg_mpfr(n_a, a, arctg_a);
-    mpfr_mul_ui(arctg_a, arctg_a, A, DEFAULT_ROUND);
+    fp_mul_ui(arctg_a, arctg_a, A);
 
     #ifdef __DEBUG__
         printf("\n");
         printf("%ld*arctg(1/%ld)=", A, a);
-        mpfr_printf("%.*Rf\n", mpfr_get_prec(arctg_a), arctg_a);
+        #ifdef USE_MPFR
+            mpfr_printf("%.*Rf\n", fp_get_prec(arctg_a), arctg_a);
+        #else
+            gmp_printf("%.*Ff\n", fp_get_prec(arctg_a), arctg_a);
+        #endif
         gmp_printf("\tinteractions %Zd\n", n_a);
         printf("\n");
     #endif
@@ -578,17 +629,17 @@ void generalArctgWithError_mpfr(mpfr_t arctg_a, unsigned long int d, unsigned lo
 %\end{equation*}
 %
 %    \begin{lstlisting}[style=macrocode,escapechar=\%]
-void machin(unsigned long long err, mpfr_t pi) {
-    mpfr_t arctg_5;
+void machin(unsigned long long err, fp_t pi) {
+    fp_t arctg_5;
     generalArctgWithError_mpfr(arctg_5, err, 4, 5);
 
-    mpfr_t arctg_239;
+    fp_t arctg_239;
     generalArctgWithError_mpfr(arctg_239, err, 1, 239);
 
-    mpfr_sub(pi, arctg_5, arctg_239, DEFAULT_ROUND);
-    mpfr_mul_ui(pi, pi, 4, DEFAULT_ROUND);
+    fp_sub(pi, arctg_5, arctg_239);
+    fp_mul_ui(pi, pi, 4);
 
-    mpfr_clears(arctg_5, arctg_239, NULL);
+    fp_clears(arctg_5, arctg_239, NULL);
 }
 %    \end{lstlisting}
 % \end{macro}
@@ -597,15 +648,6 @@ void machin(unsigned long long err, mpfr_t pi) {
 
 %</c>
 %\fi
-%
-% \newpage
-% \newgeometry{top=3cm,bottom=\dimexpr2.0cm+5pt\relax,left=1cm,right=1cm}
-% \thispagestyle{empty}
-% \begin{figure}[t]
-% \includegraphics[angle=90,origin=c,width=0.9\textwidth,height=0.9\textheight,keepaspectratio]{generated/Plot}
-% \centering
-% \end{figure}
-% \restoregeometry
 %
 %\subsection*{Fórmula de \textit{Kikuo Takano}}
 %\begin{macro}{takano()}
@@ -616,25 +658,25 @@ void machin(unsigned long long err, mpfr_t pi) {
 %\end{equation*}
 %
 %\begin{lstlisting}[style=macrocode,escapechar=\%]
-void takano(unsigned long long err, mpfr_t pi) {
-    mpfr_t arctg_49;
+void takano(unsigned long long err, fp_t pi) {
+    fp_t arctg_49;
     generalArctgWithError_mpfr(arctg_49, err, 12, 49);
 
-    mpfr_t arctg_57;
+    fp_t arctg_57;
     generalArctgWithError_mpfr(arctg_57, err, 32, 57);
 
-    mpfr_t arctg_239;
+    fp_t arctg_239;
     generalArctgWithError_mpfr(arctg_239, err, 5, 239);
 
-    mpfr_t arctg_110443;
+    fp_t arctg_110443;
     generalArctgWithError_mpfr(arctg_110443, err, 12, 110443);
 
-    mpfr_add(pi, arctg_49, arctg_57, DEFAULT_ROUND);
-    mpfr_sub(pi, pi, arctg_239, DEFAULT_ROUND);
-    mpfr_add(pi, pi, arctg_110443, DEFAULT_ROUND);
-    mpfr_mul_ui(pi, pi, 4, DEFAULT_ROUND);
+    fp_add(pi, arctg_49, arctg_57);
+    fp_sub(pi, pi, arctg_239);
+    fp_add(pi, pi, arctg_110443);
+    fp_mul_ui(pi, pi, 4);
 
-    mpfr_clears(arctg_49, arctg_57, arctg_239, arctg_110443, NULL);
+    fp_clears(arctg_49, arctg_57, arctg_239, arctg_110443, NULL);
 }
 %\end{lstlisting}
 %\end{macro}
@@ -653,25 +695,25 @@ void takano(unsigned long long err, mpfr_t pi) {
 %\end{equation*}
 %
 %\begin{lstlisting}[style=macrocode,escapechar=\%]
-void stormer(unsigned long long err, mpfr_t pi) {
-    mpfr_t arctg_57;
+void stormer(unsigned long long err, fp_t pi) {
+    fp_t arctg_57;
     generalArctgWithError_mpfr(arctg_57, err, 44, 57);
 
-    mpfr_t arctg_239;
+    fp_t arctg_239;
     generalArctgWithError_mpfr(arctg_239, err, 7, 239);
 
-    mpfr_t arctg_682;
+    fp_t arctg_682;
     generalArctgWithError_mpfr(arctg_682, err, 12, 682);
 
-    mpfr_t arctg_12943;
+    fp_t arctg_12943;
     generalArctgWithError_mpfr(arctg_12943, err, 24, 12943);
 
-    mpfr_add(pi, arctg_57, arctg_239, DEFAULT_ROUND);
-    mpfr_sub(pi, pi, arctg_682, DEFAULT_ROUND);
-    mpfr_add(pi, pi, arctg_12943, DEFAULT_ROUND);
-    mpfr_mul_ui(pi, pi, 4, DEFAULT_ROUND);
+    fp_add(pi, arctg_57, arctg_239);
+    fp_sub(pi, pi, arctg_682);
+    fp_add(pi, pi, arctg_12943);
+    fp_mul_ui(pi, pi, 4);
 
-    mpfr_clears(arctg_57, arctg_239, arctg_682, arctg_12943, NULL);
+    fp_clears(arctg_57, arctg_239, arctg_682, arctg_12943, NULL);
 }
 %    \end{lstlisting}
 % \end{macro}
@@ -693,21 +735,21 @@ int main(int argc, char* argv[]) {
 
     if(argc > 1) {
         method = argv[1][0];
-        char *stopstring;
-        err = strtoul(argv[2], &stopstring, 10);
+        err = strtoull(argv[2], NULL, 10);
     }
 
     #ifdef DEBUG
-        printf("err=%lld", err);
+        printf("method: %c\n", method);
+        printf("error: %lld\n", err);
     #endif
 
     err += 5; // para garantir a quantidade de 100 casas decimais corretas
-    mpfr_set_default_prec(err*5); // para garantir todos os calculos
+    fp_set_default_prec(err*5); // para garantir todos os calculos
 
     long double pi_double;
     pi_double = 0.0;
-    mpfr_t pi;
-    mpfr_init(pi);
+    fp_t pi;
+    fp_init(pi);
 
     #ifdef DEBUG
         start = time_as_double();
@@ -715,7 +757,7 @@ int main(int argc, char* argv[]) {
     switch (method) {
         case 'c':
             pi_double = monteCarlo(err);
-            mpfr_set_ld(pi, pi_double, DEFAULT_ROUND);
+            fp_set_ld(pi, pi_double);
             break;
         case 'm':
             machin(err, pi);
@@ -738,15 +780,26 @@ int main(int argc, char* argv[]) {
     } else {
         #ifdef DEBUG
             printf("method is %c\n", method);
-            mpfr_printf("%.*Rf\n", mpfr_get_prec(pi), pi);
+            #ifdef USE_MPFR
+                mpfr_printf("%.*Rf\n", fp_get_prec(pi) / 5, pi);
+            #else
+                gmp_printf("%.*Ff\n", fp_get_prec(pi) / 5, pi);
+            #endif
+            
             printf("%5.15f segundos\n\n", (stop - start));
         #else
-            mpfr_printf("%.*Rf\n", mpfr_get_prec(pi), pi);
+            #ifdef USE_MPFR
+                mpfr_printf("%.*Rf\n", fp_get_prec(pi) / 5, pi);
+            #else
+                gmp_printf("%.*Ff\n", fp_get_prec(pi) / 5, pi);
+            #endif
         #endif
     }
 
-    mpfr_clear(pi);
-    mpfr_free_cache();
+    fp_clear(pi);
+    #ifdef USE_MPFR
+        mpfr_free_cache();
+    #endif
 
     return 0;
 }
