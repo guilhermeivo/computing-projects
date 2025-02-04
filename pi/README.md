@@ -6,7 +6,7 @@ $ apt-get install libgmp3-dev libmpfr-dev
 ```
 
 ## Compilação
-* Para criar o arquivo e o documento basta digitar:
+* Para criar o arquivo e o documento (para o documento é necessário instalar o [`m_style`](#configuração-do-pacote-m_style)) basta digitar:
 ```
 $ ./build.sh
 ```
@@ -25,3 +25,9 @@ $ experiments_with_pi <METHOD> <ERR>
 | Method                              	| Err    	|
 |-------------------------------------	|--------	|
 | m (machin); t (takano); s (stormer) 	| Number 	|
+
+## Configuração do pacote m_style
+```
+$ git clone https://github.com/guilhermeivo/m_style/
+$ ./SAVE.sh
+```

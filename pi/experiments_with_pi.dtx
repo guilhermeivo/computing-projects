@@ -7,33 +7,32 @@
     \documentclass[oneside, a4paper, 12pt]{ltxdoc}
     \usepackage{float}
     % Packages
-    \usepackage[
-            a4paper, 
-            top=3.0cm,
-            bottom=1cm,
-            left=3.5cm,
-            right=2.0cm,
-            footskip=1.5cm,
-            includefoot]{geometry}
     \usepackage[brazil]{babel}
     \usepackage[T1]{fontenc}
     \usepackage[utf8]{inputenc}
     \usepackage{hypdoc}
-    \usepackage{newtx}
+    %%
+    % m_style repository:
+    % https://github.com/guilhermeivo/m_style/
+    \usepackage[section, maketitle]{m_style}
     \usepackage{listings}
-    \usepackage{hyperref}
+    %\usepackage[
+        %a4paper, 
+        %top=3.0cm,
+        %bottom=1cm,
+        %left=3.5cm,
+        %right=2.0cm,
+        %footskip=1.5cm,
+        %includefoot]{geometry}
     \usepackage{graphicx}
-    \usepackage{amsmath}
     \let\openbox\relax
-    \usepackage{amsthm}
+    \usepackage{amsmath,amsthm}
     \usepackage{parskip}
 
     \usepackage{tikz}
 
     %
     %\CodelineIndex
-    \DeclareMathOperator{\arctg}{arctg}
-    \renewcommand{\arctan}{\arctg}
     
     \makeatletter
 
@@ -79,94 +78,12 @@
         {ç}{{\c c}}1 {Ç}{{\c C}}1
     }
 
-    %% BEGIN UPPERLETTER
-    \newlength{\fontsizeupperletter}
-
-    \newlength{\heighttext}
-    \newlength{\widthtext}
-    \newlength{\depthtext}
-    \newlength{\totaltext}
-    \newlength{\numberoflines}
-
-    \def\upperletter#1{
-        \par%
-        \vspace{20pt}%
-        \def\@temp{%
-            \noindent\fontsize{\fontsizeupperletter}{\fontsizeupperletter}\selectfont\uppercase\expandafter{#1}%
-        }
-        \settoheight{\heighttext}{\@temp}
-        \settowidth{\widthtext}{\@temp\relax}
-        \settodepth{\depthtext}{\@temp}
-        \setlength{\totaltext}{\dimexpr \heighttext+\depthtext+\the\baselineskip}
-        
-        {\@temp}
-
-        \vspace{-\totaltext}%
-        \noindent%
-        \hangindent=\dimexpr\widthtext+0.5pc\relax\hangafter=-\the\numexpr (\number\heighttext / \number\baselineskip) + 1\relax%
-    }
-
-    \setlength{\fontsizeupperletter}{64pt}
-    %% END UPPERLETTER
-
-    \def\Hline{%
-    \noalign {\ifnum0 =`}\fi \hrule \@height 1.5pt \futurelet \reserved@a \@xhline}
-
-    \renewcommand{\maketitle}{
-        {
-            \vspace*{2cm}
-            \begin{center}
-                \expandafter\MakeUppercase\expandafter{\textbf{\Huge\@title}}
-                \@author
-            \end{center}
-            \vspace*{2cm}
-        }
-    }
-
-    \def\ps@mainheadings{%
-        \def\@oddhead{\hspace*{-1cm}\reset@font\footnotesize{\slshape\@title}\hfill\thepage\hspace*{-1cm}}%
-        \def\@evenhead{\hspace*{-1cm}\reset@font\footnotesize\thepage\hfill\hspace*{-1cm}}%
-        \let\@oddfoot\@empty
-        \let\@evenfoot\@empty
-    }
-
-    \renewcommand{\section}{\@startsection {section}{1}{\z@}%
-        {-3.5ex \@plus -1ex \@minus -.2ex}%
-        {2.3ex \@plus .2ex}%
-        {\centering\normalfont\LARGE\scshape\bfseries}%
-    }
-    \renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
-        {-3.25ex\@plus -1ex \@minus -.2ex}%
-        {1.5ex \@plus .2ex}%
-        {\normalfont\Large\scshape\bfseries}%
-    }
-
-    \renewcommand{\subsubsection}{\@startsection{subsubsection}{2}{\z@}%
-        {-3.25ex\@plus -1ex \@minus -.2ex}%
-        {1.5ex \@plus .2ex}%
-        {\normalfont\normalsize\large\scshape\bfseries}%
-    }
-
     \hypersetup{
         colorlinks = true,
         allcolors = black,
         pdftitle = {\@title},
         pdfauthor = {\@author},
         pdfcreator = {\LaTeX}
-    }
-
-    \newenvironment{appendixenv}[1][\@empty]{
-        \begingroup
-        \thispagestyle{empty}
-        \appendix
-        \cleardoublepage
-        \vspace*{\fill}
-        {\centering\part*{\centering\scshape\Huge#1}}
-        \vspace*{\fill}
-        \newpage
-    }{%
-        \endgroup
-        \newpage
     }
 
     \makeatother
@@ -179,11 +96,10 @@
     \setlength{\parindent}{1.5cm}
 
     \title{Experimentos usando Pi}
-    \author{\url{https://github.com/guilhermeivo/computing-projects/}}
+    \accessin{\url{https://github.com/guilhermeivo/computing-projects/}}
 
     \begin{document}
-        \pagestyle{mainheadings}
-        \maketitle\thispagestyle{empty}
+        \maketitle\pagenumbering{arabic}
         \DocInput{\jobname.dtx}
     \end{document}
 %</driver>
@@ -261,7 +177,7 @@
 %
 %\section*{Pi usando Monte Carlo}
 %
-%\upperletter O método de Monte Carlo é uma técnica de amostragem estatística, teve seu desencadeamento após o desenvolvimento do \textit{ENIAC}\footnote{O ENIAC produziu $2{,}037$ dígitos de $\pi$ em $70$ horas em $1949$ usando a \textit{Fórmula de Machin\index{John Machin!Fórmula de Machin}}\cite[p.~592 e 627]{pi-source-book}}, primeiro computador eletrônico, desenvolvido durante a Segunda Guerra Mundial, para lidar com grandes cálculos. O método baseia-se em números ``aleatórios'' para resolver os seus problemas que é aplicada com sucesso em diversos problemas contemporâneos \cite{special-issue}.
+%O método de Monte Carlo é uma técnica de amostragem estatística, teve seu desencadeamento após o desenvolvimento do \textit{ENIAC}\footnote{O ENIAC produziu $2{,}037$ dígitos de $\pi$ em $70$ horas em $1949$ usando a \textit{Fórmula de Machin\index{John Machin!Fórmula de Machin}}\cite[p.~592 e 627]{pi-source-book}}, primeiro computador eletrônico, desenvolvido durante a Segunda Guerra Mundial, para lidar com grandes cálculos. O método baseia-se em números ``aleatórios'' para resolver os seus problemas que é aplicada com sucesso em diversos problemas contemporâneos \cite{special-issue}.
 %
 %\begin{macro}{monteCarlo()}
 %O problema consiste em montar um quadrado de comprimento $1$, e $\frac{1}{4}$ de uma circunferência inscrita nesse quadrado e de forma aleatório disparar pontos dentro do espaço.
@@ -341,7 +257,7 @@ long double monteCarlo(unsigned long long n) {
 %\cleardoublepage
 %\section*{Desenvolvendo um caso geral}
 %
-%\upperletter Para facilitar o desenvolvimento dos algoritmos para calcular $\arctg$ vamos realizar um caso geral, onde iremos adotar o valor para $x$ sendo igual a $1/a$, pois em todas as fórmulas utilizadas é usado $\arctg$ do tipo $\arctg{1/a}$.
+%Para facilitar o desenvolvimento dos algoritmos para calcular $\arctg$ vamos realizar um caso geral, onde iremos adotar o valor para $x$ sendo igual a $1/a$, pois em todas as fórmulas utilizadas é usado $\arctg$ do tipo $\arctg{1/a}$.
 %Então, podemos desenvolver a série da função $\arctg$ da seguinte maneira:
 %
 %
@@ -477,7 +393,7 @@ unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, u
 % arredondamento correto, é baseado na biblioteca 
 % \textit{GNU Multiple Precision Arithmetic} (\textit{GMP}).
 %
-%\subsection*{Usando \textit{MPFR} e \textit{GMP}}
+%\subsection*{Usando \textit{MPFR} e \textit{GMP}}*
 %
 %\begin{macro}{generalArctg\_mpfr()}
 %Substituindo os tipos tradicionais pelos utilizados nas bibliotecas, temos:
@@ -624,7 +540,7 @@ void generalArctgWithError_mpfr(fp_t arctg_a, unsigned long int d, unsigned long
 %</c>
 %\fi
 %
-%\subsection*{Fórmula de \textit{Machin} Original}
+%\subsection*{Fórmula de \textit{Machin} Original}*
 %
 %\begin{macro}{machin()}
 %Função \verb|machin| resolvendo a \textit{Fórmula de Machin Original}:
@@ -654,7 +570,8 @@ void machin(unsigned long long err, fp_t pi) {
 %</c>
 %\fi
 %
-%\subsection*{Fórmula de \textit{Kikuo Takano}}
+%\subsection*{Fórmula de \textit{Kikuo Takano}}*
+%
 %\begin{macro}{takano()}
 %Função \verb|takano| resolvendo a \textit{Fórmula de Kikuo Takano}:
 %
@@ -691,7 +608,8 @@ void takano(unsigned long long err, fp_t pi) {
 %</c>
 %\fi
 %
-%\subsection*{Fórmula de \textit{Fredrik Carl M\"{u}lertz St{\o}rmer}}
+%\subsection*{Fórmula de \textit{Fredrik Carl M\"{u}lertz St{\o}rmer}}*
+%
 %\begin{macro}{stormer()}
 %Função \verb|stormer| resolvendo a \textit{Fórmula de Fredrik Carl M\"{u}lertz St{\o}rmer}:
 %
@@ -811,10 +729,11 @@ int main(int argc, char* argv[]) {
 %</c>
 %\fi
 %
-%\include{content/appendix}
 %
-%\cleardoublepage\thispagestyle{empty}
+%\cleardoublepage\pagestyle{empty}\pagenumbering{gobble}
 %\bibliographystyle{abnt}
 %\bibliography{references}
+%
+%\include{content/appendix}
 %
 %\Finale
