@@ -1,3 +1,4 @@
+pdf(NULL) # prevent create Rplots.pdf
 par(family = "serif")
 
 dat <- read.table("generated/pi_monteCarlo_histogram.dat")

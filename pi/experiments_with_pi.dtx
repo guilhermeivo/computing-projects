@@ -11,6 +11,7 @@
     \usepackage[T1]{fontenc}
     \usepackage[utf8]{inputenc}
     \usepackage{hypdoc}
+    \usepackage{microtype}
     %%
     % m_style repository:
     % https://github.com/guilhermeivo/m_style/
@@ -174,7 +175,11 @@
 %</c>
 %\fi
 %
-%\noindent Queremos implementar algoritmos para calcular o valor de $\pi$ usando métodos computacionais.
+%\begin{quote}
+%Queremos implementar algoritmos para calcular o valor de $\pi$ usando métodos computacionais.
+%\end{quote}
+%
+%\nocite{aocc-user-guide}
 %
 %\section*{Pi usando Monte Carlo}
 %
@@ -256,7 +261,7 @@ long double monteCarlo(unsigned long long n) {
 %\input{content/pi-at-monte-carlo-result.tex}
 %
 %\cleardoublepage
-%\section*{Desenvolvendo um caso geral}
+%\section*{Desenvolvendo um Caso Geral}
 %
 %Para facilitar o desenvolvimento dos algoritmos para calcular $\arctg$ vamos realizar um caso geral, onde iremos adotar o valor para $x$ sendo igual a $1/a$, pois em todas as fórmulas utilizadas é usado $\arctg$ do tipo $\arctg{1/a}$.
 %Então, podemos desenvolver a série da função $\arctg$ da seguinte maneira:
@@ -608,6 +613,14 @@ void takano(unsigned long long err, fp_t pi) {
 
 %</c>
 %\fi
+%
+%\begin{figure}[H]
+%   \centering
+%   \caption{Tempo de evolução com o aumento da precisão do valor de \(\pi\) usando fórmula de \textit{Kikuo Takano}}
+%   \includegraphics[width=0.95\columnwidth]{generated/timerun__plot}
+%   Fonte: Elaborado pelo próprio autor
+%   \label{fig:timerun__plot}
+%\end{figure}%
 %
 %\subsection*{Fórmula de \textit{Fredrik Carl M\"{u}lertz St{\o}rmer}}
 %

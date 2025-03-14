@@ -1,0 +1,55 @@
+# syntax=docker/dockerfile:1
+
+ARG COMPILER_VERSION="5.0.0"
+
+FROM debian:bookworm-slim AS base-env
+
+ARG COMPILER_VERSION
+
+RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
+    ca-certificates \
+    # recommend by debian docker
+    locales \
+    #
+    build-essential \
+    wget \
+    # prerequisites aocc
+    libstdc++6 \
+    libncurses-dev \
+    zlib1g-dev \
+    libxml2-dev \
+    python3 && \
+    update-ca-certificates && \
+    localedef -i pt_BR -c -f UTF-8 -A /usr/share/locale/locale.alias pt_BR.UTF-8 && \
+    apt-get -y autoclean && apt-get -y autoremove && apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV LANG=pt_BR.utf8
+
+# lib-dev extras
+RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
+    libgmp3-dev libmpfr-dev && \
+    apt-get -y autoclean && apt-get -y autoremove && apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp/aocc
+RUN wget https://download.amd.com/developer/eula/aocc/aocc-5-0/aocc-compiler-${COMPILER_VERSION}.tar
+RUN tar -xvf aocc-compiler-${COMPILER_VERSION}.tar
+RUN cd aocc-compiler-${COMPILER_VERSION} && \
+    bash install.sh
+
+SHELL ["/bin/bash", "-c", "source /tmp/aocc/setenv_AOCC.sh"]
+
+RUN bash /tmp/aocc/aocc-compiler-${COMPILER_VERSION}/AOCC-prerequisites-check.sh
+
+WORKDIR /bench
+
+COPY entrypoint.sh /bench/entrypoint.sh
+RUN chmod +x /bench/entrypoint.sh
+#COPY generated/experiments_with_pi.c /bench/generated/main.c
+COPY timeclock.h /bench/timeclock.h
+
+ENTRYPOINT ["bash", "/bench/entrypoint.sh"]
+
+# docker build -t bench:debian .
+# docker run --name bench -it --rm -v /$(pwd)/generated:/bench/generated bench:debian

@@ -1,3 +1,4 @@
+pdf(NULL) # prevent create Rplots.pdf
 par(family = "serif")
 
 pdf("generated/plot_monteCarlo.pdf", width = 5.6, height = 4)

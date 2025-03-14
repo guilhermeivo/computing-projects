@@ -8,6 +8,12 @@ $ apt-get install libgmp3-dev libmpfr-dev
 ## Compilação
 * Para criar o arquivo e o documento (para o documento é necessário instalar o [`m_style`](#configuração-do-pacote-m_style)) basta digitar:
 ```
+$ tex experiments_with_pi.ins 
+
+# Generate data
+$ docker build -t bench:debian .
+$ docker run --name bench -it --rm -v /$(pwd)/generated:/bench/generated bench:debian
+
 $ ./build.sh
 ```
 

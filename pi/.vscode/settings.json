@@ -21,10 +21,6 @@
     "[tex]": {
         "editor.wordWrap": "on",
     },
-    "workbench.editor.autoLockGroups": {
-        "pdf.preview": true
-    },
-    
     "files.associations": {
         "*.dtx": "latex",
         "*.ins": "latex",

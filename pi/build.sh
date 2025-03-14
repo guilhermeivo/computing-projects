@@ -8,17 +8,8 @@ do
         r) 
             RECREATE_DATA=TRUE
         ;;
-        i) 
-            INSTALL_PACKAGES=TRUE
-        ;;
     esac
 done
-
-if [ ! -z "$INSTALL_PACKAGES" ]; 
-then
-    apt-get update
-    apt-get install -y libgmp3-dev libmpfr-dev
-fi
 
 FOLDER="generated/"
 DATA_FOLDER="data/"
@@ -27,55 +18,8 @@ BIN="$FOLDER""experiments_with_pi"
 MAX=100
 
 yes | tex $DOCSTRIP.ins 
-gcc "$FOLDER"experiments_with_pi.c -Wall -lmpfr -lgmp -o $BIN
 
-if [ ! -z "$RECREATE_DATA" ]; 
-then
-    # Monte carlo datas
-
-    printf " -- Monte Carlo Convergence -- "
-
-    MAX=1000
-    for i in $(seq $MAX)
-    do
-        printf "$i $("$BIN" c $i 2>/dev/null | tail -1 )\n"
-    done > "$FOLDER""pi_monteCarlo_convergence.dat"
-
-    printf " -- Monte Carlo Histogram -- "
-
-    MAX=200
-    for i in $(seq $MAX)
-    do
-        printf "$i $("$BIN" c 100000 2>/dev/null | tail -1 )\n"
-        sleep 1 # para dar tempo de gerar outra seed :)
-    done > "$FOLDER""pi_monteCarlo_histogram.dat"
-
-    #MAX=100
-    #for i in $(seq $MAX)
-    #do
-    #   rintf "$i $("$BIN" m $i | cut -c1-"$(expr $i + 2)" 2>/dev/null | tail -1 )\n"
-    #done > "$FOLDER""pi_machin.dat"
-
-    printf " -- Machin -- "
-
-    MAX=100
-    out=$("$BIN" m $MAX | cut -c1-"$(expr $MAX + 2)" | sed -E -e :a -e 's/(.*[0-9])([0-9]{5})/\1 \\;\\allowbreak \2/;ta')
-    echo "\noindent\$\pi_{$MAX}=$out\$" > "$FOLDER""pi_machin.tex"
-
-    printf " -- Takano -- "
-
-    MAX=100
-    out=$("$BIN" t $MAX | cut -c1-"$(expr $MAX + 2)" | sed -E -e :a -e 's/(.*[0-9])([0-9]{5})/\1 \\;\\allowbreak \2/;ta')
-    echo "\noindent\$\pi_{$MAX}=$out\$" > "$FOLDER""pi_takano.tex"
-
-    printf " -- Stormer -- "
-
-    MAX=100
-    out=$("$BIN" s $MAX | cut -c1-"$(expr $MAX + 2)" | sed -E -e :a -e 's/(.*[0-9])([0-9]{5})/\1 \\;\\allowbreak \2/;ta')
-    echo "\noindent\$\pi_{$MAX}\;=\;$out\$" > "$FOLDER""pi_stormer.tex"
-fi
-
-R -e "source('data/script_convergence.R'); source('data/script_histogram.R');"
+R -e "source('data/script_convergence.R'); source('data/script_histogram.R'); source('data/script_timerun.R');"
 
 pdflatex --draftmode $DOCSTRIP.dtx
 
