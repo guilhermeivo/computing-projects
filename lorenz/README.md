@@ -1,1 +1,1 @@
-![Watch the video](media/images/lorenz/thumbnail.png)](media/videos/lorenz/1080p60/lorenz.mp4)
+[![Watch the video](media/images/lorenz/thumbnail.png)](media/videos/lorenz/1080p60/lorenz.mp4)
