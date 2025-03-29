@@ -1,3 +1,8 @@
+#!/bin/bash
+
+set -e
+
+
 MAX_ANGLE=45
 MAX_INPUT=90
 
@@ -9,6 +14,9 @@ save_var() {
 }
 
 save_var 0 0 0
+
+mkdir -p frames
+mkdir -p temp
 
 for i in $(seq $MAX_INPUT)
 do
@@ -22,3 +30,5 @@ ffmpeg -y -framerate 30 -pattern_type glob -i '*.png' \
   -c:v libx264 "../tangent.mp4"
 #convert -background white -alpha remove -layers OptimizePlus -delay 5 -loop 0 `ls -v` "../tangent.gif"
 cd ..
+
+mv frames/tangent--001.png thumbnail.png
