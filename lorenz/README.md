@@ -4,23 +4,23 @@
 
 Sistema de equações diferenciais ordinárias (EDOs) de primeira ordem:
 
-$\left\{\begin{array}{l}
+$$\left\{\begin{array}{l}
 \dfrac{dx}{dt}=\sigma(y-x)\\
 \dfrac{dy}{dt}=x(\rho-z)-y\\
 \dfrac{dz}{dt}=xy-\beta z
-\end{array}\right.$
+\end{array}\right.$$
 
 Com os parâmetros clássicos:
 
-$\sigma = 10\quad\rho=28\quad\beta=\dfrac{8}{3}$
+$$\sigma = 10\quad\rho=28\quad\beta=\dfrac{8}{3}$$
 
 A aproximação pelo método de Euler é dada por:
 
-$x(t+\Delta t)=x(t)+\dfrac{dx(t)}{dt}\Delta t$
+$$$x(t+\Delta t)=x(t)+\dfrac{dx(t)}{dt}\Delta t$$
 
-$y(t+\Delta t)=y(t)+\dfrac{dy(t)}{dt}\Delta t$
+$$y(t+\Delta t)=y(t)+\dfrac{dy(t)}{dt}\Delta t$$
 
-$z(t+\Delta t)=z(t)+\dfrac{dz(t)}{dt}\Delta t$
+$$z(t+\Delta t)=z(t)+\dfrac{dz(t)}{dt}\Delta t$$
 
 $$\Longrightarrow\begin{array}{l}
 x(t+\Delta t)=x(t)+\left(\sigma(y-x)\right)\Delta t \\
