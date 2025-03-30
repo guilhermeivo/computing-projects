@@ -4,7 +4,7 @@
 
 Sistema de equações diferenciais ordinárias (EDOs) de primeira ordem:
 
-$$\left\{\begin{array}{l}
+$$\left\lbrace\begin{array}{l}
 \dfrac{dx}{dt}=\sigma(y-x)\\
 \dfrac{dy}{dt}=x(\rho-z)-y\\
 \dfrac{dz}{dt}=xy-\beta z
@@ -16,7 +16,7 @@ $$\sigma = 10\quad\rho=28\quad\beta=\dfrac{8}{3}$$
 
 A aproximação pelo método de Euler é dada por:
 
-$$$x(t+\Delta t)=x(t)+\dfrac{dx(t)}{dt}\Delta t$$
+$$x(t+\Delta t)=x(t)+\dfrac{dx(t)}{dt}\Delta t$$
 
 $$y(t+\Delta t)=y(t)+\dfrac{dy(t)}{dt}\Delta t$$
 
