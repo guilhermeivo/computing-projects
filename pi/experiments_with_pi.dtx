@@ -28,7 +28,6 @@
     \usepackage{graphicx}
     \let\openbox\relax
     \usepackage{amsmath,amsthm}
-    \usepackage{cancel}
     \usepackage{parskip}
 
     \usepackage{tikz}
@@ -268,8 +267,8 @@ long double monteCarlo(unsigned long long n) {
 %
 %\begin{center}
 %\begin{tabular}{rcl}
-%   \(S_n\)&\(=\)&\(1+\cancel{r}+\cancel{r^{2}}+\cdots+\cancel{r^{n}}\) \\ 
-%   \(-\;r\cdot S_n\)&\(=\)&\(\cancel{r}+\cancel{r^{2}}+\cdots+\cancel{r^{n}}+r^{n+1}\) \\ 
+%   \(S_n\)&\(=\)&\(1+r+r^{2}+\cdots+r^{n}\) \\ 
+%   \(-\;r\cdot S_n\)&\(=\)&\(r+r^{2}+\cdots+r^{n}+r^{n+1}\) \\ 
 %   \hline
 %   \(S_n-rS_n\)&\(=\)&\(1-r^{n+1}\)
 %\end{tabular}
@@ -442,7 +441,8 @@ unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, u
 %
 %\phantomsection%
 %\addcontentsline{toc}{subsection}{\protect\numberline{}Usando \textit{GNU MPFR} e \textit{GNU GMP}}
-%\subsection*{Usando \textit{GNU MPFR} e \textit{GNU GMP}}
+%\subsection*{Usando \textit{GNU MPFR} e \textit{GNU GMP}}\phantom{}
+%Usaremos como prefixo ou sufixo nos nomes das funções e das variáveis \verb|fp| para caso use pontos flutuantes de valor arbitrário em sua composição e o prefixo ou sufixo \verb|gmp| para caso use valores inteiros de valor arbitrário.
 %
 %\begin{macro}{generalArctg\_mpfr()}
 %Substituindo os tipos tradicionais pelos utilizados nas bibliotecas, temos:
@@ -460,7 +460,7 @@ unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, u
 %</c>
 %\fi
 %    \begin{lstlisting}[style=macrocode,escapechar=\%]
-void generalArctg_mpfr(const mpz_t n, unsigned long int a, fp_t res) {
+void generalArctg_fp(const mpz_t n, unsigned long int a, fp_t res) {
     fp_set_ui(res, 0);
 
     mpz_t i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient;
@@ -471,8 +471,8 @@ void generalArctg_mpfr(const mpz_t n, unsigned long int a, fp_t res) {
     mpz_pow_ui(aux_pow_2, a_gmp, 2); // aux = a^4
     mpz_pow_ui(pow, a_gmp, 3); // pow = a^3
 
-    fp_t frac, numerator_mpfr, quotient_mpfr;
-    fp_inits(frac, numerator_mpfr, quotient_mpfr, NULL);
+    fp_t frac, numerator_fp, quotient_fp;
+    fp_inits(frac, numerator_fp, quotient_fp, NULL);
 
     for (mpz_set_ui(i, 0); mpz_cmp(i, n) < 0; mpz_add_ui(i, i, 4)) { // for (int i = 0; i < n; i+=4) {...}
         mpz_add_ui(i_1, i, 1); // i + 1
@@ -486,17 +486,17 @@ void generalArctg_mpfr(const mpz_t n, unsigned long int a, fp_t res) {
         mpz_mul(quotient, i_1, i_3); // (i + 1) * (i + 3)
         mpz_mul(quotient, quotient, pow); // (i + 1) * (i + 3) * a^{i+3}
 
-        fp_set_z(numerator_mpfr, numerator);
-        fp_set_z(quotient_mpfr, quotient);
+        fp_set_z(numerator_fp, numerator);
+        fp_set_z(quotient_fp, quotient);
         
-        fp_div(frac, numerator_mpfr, quotient_mpfr); // frac = numerator / quotient
+        fp_div(frac, numerator_fp, quotient_fp); // frac = numerator / quotient
         fp_add(res, res, frac); // res += frac
 
         mpz_mul(pow, pow, aux_pow_4); // pow *= a^4
     }
     mpz_clears(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, NULL);
 
-    fp_clears(frac, numerator_mpfr, quotient_mpfr, NULL);
+    fp_clears(frac, numerator_fp, quotient_fp, NULL);
 }
 %    \end{lstlisting}
 % \end{macro}
@@ -568,7 +568,7 @@ void generalArctgWithError_mpfr(fp_t arctg_a, unsigned long int d, unsigned long
     generalErrorHandle_gmp(d, A, a, n_a);
 
     fp_init(arctg_a);
-    generalArctg_mpfr(n_a, a, arctg_a);
+    generalArctg_fp(n_a, a, arctg_a);
     fp_mul_ui(arctg_a, arctg_a, A);
 
     #ifdef __DEBUG__

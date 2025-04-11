@@ -1,5 +1,9 @@
 # Pi number
 
+<h1 align="center">
+    <img alt="cover" src=".github/cover.png" />
+</h1>
+
 ## Compilação
 * Para criar o arquivo e o documento (para o documento é necessário instalar o [`m_style`](#configuração-do-pacote-m_style)) basta digitar:
 ```
