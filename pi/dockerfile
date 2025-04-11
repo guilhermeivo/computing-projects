@@ -28,6 +28,7 @@ ENV LANG=pt_BR.utf8
 
 # lib-dev extras
 RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
+    # TODO: install lib source code
     libgmp3-dev libmpfr-dev && \
     apt-get -y autoclean && apt-get -y autoremove && apt-get -y clean && \
     rm -rf /var/lib/apt/lists/*

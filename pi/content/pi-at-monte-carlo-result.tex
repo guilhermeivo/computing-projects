@@ -1,14 +1,12 @@
-\begin{figure}[H]
+\begin{graphic}[H]
    \centering
    \caption{Convergência para o método de \textit{Monte Carlo}}
    \includegraphics[width=0.95\textwidth,keepaspectratio]{generated/plot_monteCarlo}
    Fonte: Elaborado pelo próprio autor
    \label{fig:convergence_monteCalor}
-\end{figure}%
+\end{graphic}%
 
 Observando que os valores coletados na \autoref{fig:convergence_monteCalor} convergem com flutuações nos valores, pois os valores são obtidos de forma aleatória. Então, podemos interpretar estatisticamente este resultado realizando uma hipótese de normalidade na amostra.
- 
-Temos, um histograma:
 
 \begin{figure}[H]
    \centering
@@ -18,13 +16,13 @@ Temos, um histograma:
    \label{fig:histogram_monteCalor}
 \end{figure}%
 
-Devido às propriedades do gráfico, temos:
+Devido às propriedades da função, temos:
 \begin{itemize}
-   \item O ponto $x = \mu$ é um ponto de máximo absoluto, sendo o único ponto crítico do gráfico, sendo representado pela linha pontilhada central da \autoref{fig:histogram_monteCalor}
-   \item Possui dois pontos de inflexão $x = \mu - \sigma$ e $x = \mu - \sigma$, sendo representado pelas linhas pontilhadas nas extremidades do gráfico.
+   \item O ponto $x = \mu$ é um ponto de máximo absoluto, sendo o único ponto crítico do gráfico, representado pela linha pontilhada central da \autoref{fig:histogram_monteCalor}.
+   \item Possui dois pontos de inflexão $x = \mu - \sigma$ e $x = \mu - \sigma$, representado pelas linhas pontilhadas nas extremidades do gráfico.
    \item A área entre $\mu \pm \sigma$ representa $68\%$ da área total do gráfico, ou seja, $68\%$ dos valores de $\pi$ estão presentes nesse intervalo.
 \end{itemize}
-Sendo:
+Defina:
 $mean(var)$, média aritmética dos valores de $\pi$ obtidos.
 \begin{gather*}
    var = \{x_{1},\ x_{2},\ \dots,\ x_{n}\} \\
@@ -53,7 +51,7 @@ data:  var
 W = 0.9987, p-value = 0.6886
 \end{lstlisting}
 
-Observando que o $valor-p$ retornado pelo teste é maior que $0{,}05$, fortalecendo a hipótese que os dados são normalmente distribuídos.
+Observando que o \verb|valor-p| retornado pelo teste é maior que $0{,}05$, fortalecendo a hipótese que os dados são normalmente distribuídos.
 
 Além disso, tem-se:
 \begin{lstlisting}[name=coding_at_monte_carlo,language=R,style=macrocode,numbers=none]
@@ -78,4 +76,4 @@ D = 0.015002, p-value = 0.978
 alternative hypothesis: two-sided
 \end{lstlisting}
 
-O $valor-p$ em todos os testes anteriores foram superiores que $0{,}05$, fortalecendo a nossa hipótese inicial de que a normalidade não é rejeitada, como demonstrado na \autoref{fig:histogram_monteCalor}. Então, apresentando erros de medição aleatórios.
+O \verb|valor-p| em todos os testes anteriores foi superior a $0{,}05$, fortalecendo a nossa hipótese inicial de que a normalidade não é rejeitada, como demonstrado na \autoref{fig:histogram_monteCalor}. Então, apresentando erros de medição aleatórios.

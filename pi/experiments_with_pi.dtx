@@ -4,7 +4,7 @@
 %
 %<*driver>
 \listfiles
-    \documentclass[oneside, a4paper, 12pt]{ltxdoc}
+    \documentclass[oneside, a4paper]{ltxdoc}
     \usepackage{float}
     % Packages
     \usepackage[brazil]{babel}
@@ -18,7 +18,6 @@
     \usepackage[section, maketitle]{m_style}
     \usepackage{listings}
     \newgeometry{
-        a4paper, 
         top=3.0cm,
         bottom=1cm,
         left=3.5cm,
@@ -29,6 +28,7 @@
     \usepackage{graphicx}
     \let\openbox\relax
     \usepackage{amsmath,amsthm}
+    \usepackage{cancel}
     \usepackage{parskip}
 
     \usepackage{tikz}
@@ -92,10 +92,6 @@
     \lstdefinestyle{docstrip}{
         style=macrocode
     }
-    \linespread{1.25} 
-    \setlength{\parskip}{5pt}
-    \setlength{\headsep}{30pt}
-    \setlength{\parindent}{1.5cm}
 
     \title{Experimentos usando Pi}
     \accessin{\url{https://github.com/guilhermeivo/computing-projects/}}
@@ -181,12 +177,14 @@
 %
 %\nocite{aocc-user-guide}
 %
+%\phantomsection%
+%\addcontentsline{toc}{section}{\protect\numberline{}Pi usando Monte Carlo}
 %\section*{Pi usando Monte Carlo}
 %
-%O método de Monte Carlo é uma técnica de amostragem estatística, teve seu desencadeamento após o desenvolvimento do \textit{ENIAC}\footnote{O ENIAC produziu $2{,}037$ dígitos de $\pi$ em $70$ horas em $1949$ usando a \textit{Fórmula de Machin\index{John Machin!Fórmula de Machin}}\cite[p.~592 e 627]{pi-source-book}}, primeiro computador eletrônico, desenvolvido durante a Segunda Guerra Mundial, para lidar com grandes cálculos. O método baseia-se em números ``aleatórios'' para resolver os seus problemas que é aplicada com sucesso em diversos problemas contemporâneos \cite{special-issue}.
+%O método de Monte Carlo é uma técnica de amostragem estatística, teve seu desencadeamento após o desenvolvimento do \textit{ENIAC}\footnote{O ENIAC produziu $2{,}037$ dígitos de $\pi$ em $70$ horas em $1949$ usando a \textit{Fórmula de Machin\index{John Machin!Fórmula de Machin}}\cite[p.~592 e 627]{pi-source-book}}, primeiro computador eletrônico, desenvolvido durante a Segunda Guerra Mundial, para lidar com grandes cálculos. O método baseia-se em números ``aleatórios'' para resolver os seus problemas, que é aplicado com sucesso em diversos problemas contemporâneos \cite{special-issue}.
 %
 %\begin{macro}{monteCarlo()}
-%O problema consiste em montar um quadrado de comprimento $1$, e $\frac{1}{4}$ de uma circunferência inscrita nesse quadrado e de forma aleatório disparar pontos dentro do espaço.
+%O problema consiste em montar um quadrado de comprimento $1$, e $1/4$ de uma circunferência inscrita nesse quadrado e, de forma aleatória, disparar pontos dentro do espaço.
 %
 %\begin{figure}[H]
 %\noindent\begin{minipage}{0.45\textwidth}
@@ -261,36 +259,85 @@ long double monteCarlo(unsigned long long n) {
 %\input{content/pi-at-monte-carlo-result.tex}
 %
 %\cleardoublepage
+%\phantomsection%
+%\addcontentsline{toc}{section}{\protect\numberline{}Desenvolvendo um Caso Geral}
 %\section*{Desenvolvendo um Caso Geral}
 %
-%Para facilitar o desenvolvimento dos algoritmos para calcular $\arctg$ vamos realizar um caso geral, onde iremos adotar o valor para $x$ sendo igual a $1/a$, pois em todas as fórmulas utilizadas é usado $\arctg$ do tipo $\arctg{1/a}$.
+%Para facilitar o desenvolvimento dos algoritmos para calcular $\arctg$, vamos realizar um caso geral, onde iremos adotar o valor para $x$ sendo igual a $1/a$, pois em todas as fórmulas utilizadas é usado $\arctg$ do tipo $\arctg{1/a}$.
 %Então, podemos desenvolver a série da função $\arctg$ da seguinte maneira:
 %
+%\begin{center}
+%\begin{tabular}{rcl}
+%   \(S_n\)&\(=\)&\(1+\cancel{r}+\cancel{r^{2}}+\cdots+\cancel{r^{n}}\) \\ 
+%   \(-\;r\cdot S_n\)&\(=\)&\(\cancel{r}+\cancel{r^{2}}+\cdots+\cancel{r^{n}}+r^{n+1}\) \\ 
+%   \hline
+%   \(S_n-rS_n\)&\(=\)&\(1-r^{n+1}\)
+%\end{tabular}
+%\end{center}
 %
 %\begin{equation*}
-%   \begin{split}
-%A \cdot \arctg{x}=&A \cdot\sum_{k=0}^{n}\left(\left(-1\right)^k\frac{x^{2k+1}}{2k+1}\right)+A\cdot R_n\left(x\right)\Rightarrow \\ 
-%\Rightarrow A\cdot\arctg{\left(\frac{1}{a}\right)}=&A\cdot\sum_{k=0}^{n}\left(\left(-1\right)^k\frac{\left(\frac{1}{a}\right)^{2k+1}}{2k+1}\right)+A\cdot R_n\left(\frac{1}{a}\right) \\
-%=&A\cdot\underbrace{\sum_{k=0}^{n}\left(\left(-1\right)^k\frac{1}{a^{2k+1}}\cdot\frac{1}{2k+1}\right)}_{\displaystyle P_n\left(\frac{1}{a}\right)}+A\cdot R_n\left(\frac{1}{a}\right) \\ \\
-%P_n\left(\frac{1}{a}\right)=&\frac{1}{a}-\frac{1}{3a^3}+\frac{1}{5a^5}+\frac{1}{7a^7}-\frac{1}{9a^9}+\frac{1}{11a^{11}}+\dots+ \\
-%& \qquad\qquad\qquad\qquad+ \frac{1}{\left(2n+1\right)\cdot a^{2n+1}}-\frac{1}{\left(2n+3\right)\cdot a^{2n+3}}
-%   \end{split}
+%\begin{gathered}
+%\Longrightarrow S_n=\frac{1-r^{n+1}}{1-r} \\
+%\lim_{n\to\infty}S_n=\left\{\begin{array}{l}
+%\dfrac{1}{1-r}\text{,}\;\lvert r\rvert<1 \\
+%\text{diverge, caso contrário}
+%\end{array}\right.
+%\end{gathered}
+%\end{equation*}
+%
+%\begin{equation}
+%\begin{gathered}
+%S_n=\sum\limits_{k=0}^{n}r^{n}=1+r+r^{2}+\cdots+r^{n} \\
+%\therefore\quad\left\{r^{n}\right\}_{n=0}^{\infty}=\lim_{n\to\infty}\sum\limits_{k=0}^{n}r^{n}=\sum\limits_{n=0}^{\infty}r^{n}=\frac{1}{1-r}\text{,}\quad\lvert r\rvert<1\;\forall r\in\mathbb{R}
+%\tag{Série Geométrica}
+%\end{gathered}
+%\end{equation}
+%
+%Considerando \(r=-x^{2}\) e desenvolvendo pelo teorema de diferenciação e integração para séries de potências, temos
+%
+%\begin{equation*}
+%\begin{gathered}
+%\sum\limits_{n=0}^{\infty}(-1)^{n}x^{2n}=\frac{1}{1+x^{2}} \\
+%\Longrightarrow\sum\limits_{n=0}^{\infty}\left((-1)^{n}\int x^{2n}\;dx\right)+\text{cte}=\int\frac{1}{1+x^{2}}\;dx \\
+%\Longrightarrow\sum\limits_{n=0}^{\infty}(-1)^{n}\frac{x^{2n+1}}{2n+1}+\text{cte}=\arctg{x} \\
+%\end{gathered}
+%\end{equation*}
+%
+%Para \(x=0\), temos \(\arctg{x}=0\),
+%
+%\begin{equation}\label{arctan_series}
+%\therefore\quad\arctg{x}=\sum\limits_{n=0}^{\infty}(-1)^{n}\frac{x^{2n+1}}{2n+1}\text{,}\quad\lvert x\rvert<1\;\forall x\in\mathbb{R}
+%\end{equation}
+%
+%Sendo uma série alternada, podemos reescrever a série com estimativa do erro
+%
+%\begin{equation*}
+%\begin{split}
+%\arctg{x}\approx S_n&=\sum_{k=0}^{n}\left(-1\right)^k\frac{x^{2k+1}}{2k+1}+R_n(x)\text{, substituindo}\;x=1/a \\ 
+%&=\underbrace{\sum_{k=0}^{n}\left(\left(-1\right)^k\frac{1}{a^{2k+1}}\cdot\frac{1}{2k+1}\right)}_{\displaystyle P_n\left(1/a\right)}+R_n\left(1/a\right)
+%\end{split}
+%\end{equation*}%
+%
+%\begin{multline*}
+%P_n\left(\frac{1}{a}\right)=\frac{1}{a}-\frac{1}{3a^3}+\frac{1}{5a^5}+\frac{1}{7a^7}-\frac{1}{9a^9}+\frac{1}{11a^{11}}+\cdots+\underbrace{\frac{1}{\left(2n+1\right)\cdot a^{2n+1}}}_{b_n}-\underbrace{\frac{1}{\left(2n+3\right)\cdot a^{2n+3}}}_{b_{n+1}}
+%\end{multline*}
+%
+%Observando o aparecimento de uma série telescópica e otimizando para o desenvolvimento computacional, temos
+%
+%\begin{equation*}
+%\begin{split}
+%b_n-b_{n+1}&=\frac{1}{\left(2n+1\right)\cdot a^{2n+1}}-\frac{1}{\left(2n+3\right)\cdot a^{2n+3}} \\
+%&=\frac{\left(2n+3\right)\cdot a^{2n+3}-\left(2n+1\right)\cdot a^{2n+1}}{\left(2n+1\right)\cdot a^{2n+1}\cdot\left(2n+3\right)\cdot a^{2n+3}} \\
+%&=\frac{\left(2n+3\right)\cdot a^2-\left(2n+1\right)}{\left(2n+1\right)\cdot\left(2n+3\right)\cdot a^{2n+3}}\text{, usando que $n=2k$} \\
+%&=\frac{\left(4k+3\right)\cdot a^2-\left(4k+1\right)}{\left(4k+1\right)\cdot\left(4k+3\right)\cdot a^{4k+3}}
+%\end{split}
 %\end{equation*}%
 %
 %\begin{equation*}
-%   \begin{split}
-%&\frac{1}{\left(2n+1\right)\cdot a^{2n+1}}-\frac{1}{\left(2n+3\right)\cdot a^{2n+3}}=\\
-%=&\frac{\left(2n+3\right)\cdot a^{2n+3}-\left(2n+1\right)\cdot a^{2n+1}}{\left(2n+1\right)\cdot a^{2n+1}\cdot\left(2n+3\right)\cdot a^{2n+3}} = \\
-%=&\frac{\left(2n+3\right)\cdot a^2-\left(2n+1\right)}{\left(2n+1\right)\cdot\left(2n+3\right)\cdot a^{2n+3}}\text{, usando que $n=2k$, temos,}\\
-%=&\frac{\left(4k+3\right)\cdot a^2-\left(4k+1\right)}{\left(4k+1\right)\cdot\left(4k+3\right)\cdot a^{4k+3}}
-%   \end{split}
-%\end{equation*}%
-%
-%\begin{equation*}
-%   \begin{split}
-%P_n\left(\frac{1}{a}\right)=&\sum_{k=0}^{n}\left(\frac{\left(4k+3\right)\cdot a^2-\left(4k+1\right)}{\left(4k+1\right)\cdot\left(4k+3\right)\cdot a^{4k+3}}\right)\\
-%=&\sum_{k=0}^{n}\left(\frac{\left(i+3\right)\cdot a^2-\left(i+1\right)}{\left(i+1\right)\cdot\left(i+3\right)\cdot a^{i+3}}\right)\text{, } i{+}{=}4
-%   \end{split}
+%\begin{split}
+%P_n\left(1/a\right)&=\sum_{k=0}^{n}\frac{\left(4k+3\right)\cdot a^2-\left(4k+1\right)}{\left(4k+1\right)\cdot\left(4k+3\right)\cdot a^{4k+3}} \\
+%&=\sum_{\substack{i=0 \\ i{+}{=}4}}^{n}\frac{\left(i+3\right)\cdot a^2-\left(i+1\right)}{\left(i+1\right)\cdot\left(i+3\right)\cdot a^{i+3}}
+%\end{split}
 %\end{equation*}%
 %
 %\begin{macro}{generalArctg()}
@@ -318,7 +365,7 @@ long double generalArctg(unsigned long int n, unsigned long int a) {
     for (i = 0; i < n; i+=4) {
         numerator = (unsigned long int) (i + 3) * (a * a) - (i + 1);
         quotient = (unsigned long int) (i + 1) * (i + 3) * pow;
-        res += (long double) numerator / quotient;
+        res += (long double) numerator / (long double) quotient;
 
         pow *= aux_pow;
     }
@@ -333,15 +380,17 @@ long double generalArctg(unsigned long int n, unsigned long int a) {
 %</c>
 %\fi
 %
+%Desenvolvendo o resto
+%
 %\begin{equation*}
-%   \begin{split}
-% \left \lvert R_n\left(\frac{1}{a}\right) \right \rvert \leq& \frac{\left(\frac{1}{a}\right)^{2n+3}}{2n+3} \\ \\
-% A \cdot \frac{1}{a^{2n+3}} \cdot \frac{1}{2n+3}<&A \cdot \frac{1}{a^{2n+3}} \cdot \frac{1}{2\cdot\left(n+1\right)}\overset{?}{<}\epsilon \\
-% \frac{1}{\epsilon}\cdot\frac{A}{2a}<&a^{2\cdot\left(n+1\right)}\cdot\left(n+1\right)
-%   \end{split}
+%\begin{split}
+%\lvert R_n\rvert&\leq\frac{1}{a^{2n+3}}\cdot\frac{1}{2n+3} \\
+%\frac{1}{a^{2n+3}}\cdot\frac{1}{2n+3}&<\frac{1}{a^{2\cdot\left(n+1\right)}}\cdot\frac{1}{2\cdot\left(n+1\right)}\overset{?}{<}\epsilon \\
+%\frac{1}{\epsilon}\cdot\frac{1}{2a}&<a^{2\cdot\left(n+1\right)}\cdot\left(n+1\right)
+%\end{split}
 %\end{equation*}%
 %
-% Como $\epsilon=10^{-d}$, tem-se: $\displaystyle 10^{d}\cdot\frac{A}{2a}<a^{2\cdot\left(n+1\right)}\cdot\left(n+1\right)$, sendo $n$ então a quantidade de iterações necessárias.
+% Como $\epsilon=10^{-d}$, tem-se: $\displaystyle 10^{d}\cdot\frac{A}{2a}<a^{2\cdot\left(n+1\right)}\cdot\left(n+1\right)$, sendo $n$ então a quantidade de iterações necessárias e $A$ o valor de contração/expansão no eixo y da função.
 %
 % \begin{macro}{generalErrorHandle()}
 %\iffalse
@@ -389,17 +438,11 @@ unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, u
 %</c>
 %\fi
 %
-%Porém utilizando essas funções para $\pi/4=\arctg{(1)}$ o maior 
-% erro que conseguimos alcançar, devido às limitações dos tipos utilizados 
-% (\verb|unsigned long int| e \verb|long double|) nas funções, é 
-% $\epsilon=10^{-9}$.
-% Então é necessário utilizar funções para cálculos de precisão arbitrária, 
-% sendo, nesse caso, utilizado a biblioteca \textit{GNU MPFR}, uma 
-% biblioteca \textit{C} para cálculos de ponto flutuante de precisão múltipla com 
-% arredondamento correto, é baseado na biblioteca 
-% \textit{GNU Multiple Precision Arithmetic} (\textit{GMP}).
+%Porém, utilizando essas funções para $\pi/4=\arctg{(1)}$ alcançamos as limitações das representações utilizadas (\verb|unsigned long int| e \verb|long double|) ao tentar calcular para um $d$ grande, que no caso dos pontos flutuantes segue a norma específica para formatos e operações para aritmética em sistemas de computadores, IEEE 754\footnote{Representado na norma por \verb|binary64| dependendo da arquitetura da máquina.}\cite{ieee}. Então é necessário utilizar funções para cálculos de precisão arbitrária, sendo, nesse caso, utilizada a biblioteca \textit{GNU MPFR}, uma biblioteca \textit{C} para cálculos de ponto flutuante de precisão múltipla com arredondamento correto, e baseada na biblioteca \textit{GNU Multiple Precision Arithmetic} (\textit{GMP}).
 %
-%\subsection*{Usando \textit{MPFR} e \textit{GMP}}
+%\phantomsection%
+%\addcontentsline{toc}{subsection}{\protect\numberline{}Usando \textit{GNU MPFR} e \textit{GNU GMP}}
+%\subsection*{Usando \textit{GNU MPFR} e \textit{GNU GMP}}
 %
 %\begin{macro}{generalArctg\_mpfr()}
 %Substituindo os tipos tradicionais pelos utilizados nas bibliotecas, temos:
@@ -546,6 +589,8 @@ void generalArctgWithError_mpfr(fp_t arctg_a, unsigned long int d, unsigned long
 %</c>
 %\fi
 %
+%\phantomsection%
+%\addcontentsline{toc}{subsection}{\protect\numberline{}Fórmula de \textit{Machin} Original}
 %\subsection*{Fórmula de \textit{Machin} Original}
 %
 %\begin{macro}{machin()}
@@ -576,6 +621,8 @@ void machin(unsigned long long err, fp_t pi) {
 %</c>
 %\fi
 %
+%\phantomsection%
+%\addcontentsline{toc}{subsection}{\protect\numberline{}Fórmula de \textit{Kikuo Takano}}
 %\subsection*{Fórmula de \textit{Kikuo Takano}}
 %
 %\begin{macro}{takano()}
@@ -614,14 +661,16 @@ void takano(unsigned long long err, fp_t pi) {
 %</c>
 %\fi
 %
-%\begin{figure}[H]
+%\begin{graphic}[H]
 %   \centering
 %   \caption{Tempo de evolução com o aumento da precisão do valor de \(\pi\) usando fórmula de \textit{Kikuo Takano}}
 %   \includegraphics[width=0.95\columnwidth]{generated/timerun__plot}
 %   Fonte: Elaborado pelo próprio autor
 %   \label{fig:timerun__plot}
-%\end{figure}%
+%\end{graphic}%
 %
+%\phantomsection%
+%\addcontentsline{toc}{subsection}{Fórmula de \textit{Fredrik Carl M\"{u}lertz St{\o}rmer}}
 %\subsection*{Fórmula de \textit{Fredrik Carl M\"{u}lertz St{\o}rmer}}
 %
 %\begin{macro}{stormer()}

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 while getopts ri flag

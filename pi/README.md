@@ -1,10 +1,5 @@
 # Pi number
 
-## Configuração inicial
-```
-$ apt-get install libgmp3-dev libmpfr-dev
-```
-
 ## Compilação
 * Para criar o arquivo e o documento (para o documento é necessário instalar o [`m_style`](#configuração-do-pacote-m_style)) basta digitar:
 ```
