@@ -19,7 +19,7 @@ $ ./build.sh
 * Caso deseja compilar o arquivo `experiments_with_pi.c` manualmente:
 ```
 $ tex experiments_with_pi.ins 
-$ gcc experiments_with_pi.c -Wall -lmpfr -lgmp -o experiments_with_pi -D DEBUG
+$ gcc experiments_with_pi.c -lmpfr -lgmp -o experiments_with_pi -D DEBUG
 ```
 
 E para executar o arquivo compilado:

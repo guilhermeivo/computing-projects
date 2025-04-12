@@ -15,14 +15,7 @@
         "**/*.brf" : true
 
     },
-    "[latex]": {
-        "editor.wordWrap": "on",
-    },
-    "[tex]": {
-        "editor.wordWrap": "on",
-    },
     "files.associations": {
-        "*.dtx": "latex",
         "*.ins": "latex",
     },
 }

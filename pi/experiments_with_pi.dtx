@@ -1,6 +1,6 @@
 %\iffalse
 %
-%<driver>\ProvidesFile{pi.dtx}
+%<driver>\ProvidesFile{experiments_with_pi.dtx}
 %
 %<*driver>
 \listfiles
@@ -114,12 +114,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <gmp.h>
 #include <mpfr.h>
 #include "../timeclock.h"
 
 #define USE_MPFR
 //#define USE_MPF // nao usa metodos de arredondamento
+
+#if (!defined(MPFR_VERSION) || (MPFR_VERSION < MPFR_VERSION_NUM(3,0,0)))
+# error "Wrong MPFR version."
+#endif
 
 #ifdef USE_MPFR
     #define DEFAULT_ROUND MPFR_RNDN
@@ -561,7 +566,7 @@ void generalErrorHandle_gmp(unsigned long int d, unsigned long int A, unsigned l
  * @param A valor a ser multiplicado
  * @param a quociente do valor do arctg
  */
-void generalArctgWithError_mpfr(fp_t arctg_a, unsigned long int d, unsigned long int A, unsigned long int a) {
+void generalArctgWithError_fp(fp_t arctg_a, unsigned long int d, unsigned long int A, unsigned long int a) {
     // A*arctg(1/a)
     mpz_t n_a;
     mpz_init(n_a);
@@ -603,10 +608,10 @@ void generalArctgWithError_mpfr(fp_t arctg_a, unsigned long int d, unsigned long
 %    \begin{lstlisting}[style=macrocode,escapechar=\%]
 void machin(unsigned long long err, fp_t pi) {
     fp_t arctg_5;
-    generalArctgWithError_mpfr(arctg_5, err, 4, 5);
+    generalArctgWithError_fp(arctg_5, err, 4, 5);
 
     fp_t arctg_239;
-    generalArctgWithError_mpfr(arctg_239, err, 1, 239);
+    generalArctgWithError_fp(arctg_239, err, 1, 239);
 
     fp_sub(pi, arctg_5, arctg_239);
     fp_mul_ui(pi, pi, 4);
@@ -635,16 +640,30 @@ void machin(unsigned long long err, fp_t pi) {
 %\begin{lstlisting}[style=macrocode,escapechar=\%]
 void takano(unsigned long long err, fp_t pi) {
     fp_t arctg_49;
-    generalArctgWithError_mpfr(arctg_49, err, 12, 49);
+    generalArctgWithError_fp(arctg_49, err, 12, 49);
 
     fp_t arctg_57;
-    generalArctgWithError_mpfr(arctg_57, err, 32, 57);
+    generalArctgWithError_fp(arctg_57, err, 32, 57);
 
     fp_t arctg_239;
-    generalArctgWithError_mpfr(arctg_239, err, 5, 239);
+    generalArctgWithError_fp(arctg_239, err, 5, 239);
 
     fp_t arctg_110443;
-    generalArctgWithError_mpfr(arctg_110443, err, 12, 110443);
+    generalArctgWithError_fp(arctg_110443, err, 12, 110443);
+
+    // equalizar precisão
+    /*fp_t *arctg[] = { &arctg_49, &arctg_57, &arctg_239, &arctg_110443 };
+    mpfr_prec_t maxPrecision = MPFR_PREC_MIN;
+    for (int i = 0; i < 4; i++) {
+        if (maxPrecision < fp_get_prec(arctg[i])) {
+            maxPrecision = fp_get_prec(arctg[i]);
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        if (maxPrecision > fp_get_prec(arctg[i])) {
+            mpfr_prec_round(*(arctg[i]), maxPrecision, DEFAULT_ROUND);
+        }
+    }*/
 
     fp_add(pi, arctg_49, arctg_57);
     fp_sub(pi, pi, arctg_239);
@@ -683,16 +702,16 @@ void takano(unsigned long long err, fp_t pi) {
 %\begin{lstlisting}[style=macrocode,escapechar=\%]
 void stormer(unsigned long long err, fp_t pi) {
     fp_t arctg_57;
-    generalArctgWithError_mpfr(arctg_57, err, 44, 57);
+    generalArctgWithError_fp(arctg_57, err, 44, 57);
 
     fp_t arctg_239;
-    generalArctgWithError_mpfr(arctg_239, err, 7, 239);
+    generalArctgWithError_fp(arctg_239, err, 7, 239);
 
     fp_t arctg_682;
-    generalArctgWithError_mpfr(arctg_682, err, 12, 682);
+    generalArctgWithError_fp(arctg_682, err, 12, 682);
 
     fp_t arctg_12943;
-    generalArctgWithError_mpfr(arctg_12943, err, 24, 12943);
+    generalArctgWithError_fp(arctg_12943, err, 24, 12943);
 
     fp_add(pi, arctg_57, arctg_239);
     fp_sub(pi, pi, arctg_682);
@@ -715,8 +734,9 @@ int main(int argc, char* argv[]) {
     #ifdef DEBUG
         double start, stop;
     #endif
+
     unsigned long long err;
-    char method = 'm'; // defalt value
+    char method = 'm'; // valor padrão
     err = 100; 
 
     if(argc > 1) {
@@ -726,10 +746,15 @@ int main(int argc, char* argv[]) {
 
     #ifdef DEBUG
         printf("method: %c\n", method);
-        printf("error: %lld\n", err);
+        printf("error: %lld (max %ld)\n", err, MPFR_PREC_MAX);
+        printf("\n");
     #endif
 
-    err += 5; // para garantir a quantidade de 100 casas decimais corretas
+    if (strcmp (mpfr_get_version (), MPFR_VERSION_STRING)) {
+        fprintf (stderr, "Warning: header and library do not match\n");
+    }
+
+    err += 5; // para garantir a quantidade de casas decimais corretas e não apenas o erro
     fp_set_default_prec(err*5); // para garantir todos os calculos
 
     long double pi_double;
@@ -765,14 +790,13 @@ int main(int argc, char* argv[]) {
         printf("%12.10Lf\n", pi_double);
     } else {
         #ifdef DEBUG
-            printf("method is %c\n", method);
             #ifdef USE_MPFR
                 mpfr_printf("%.*Rf\n", fp_get_prec(pi) / 5, pi);
             #else
                 gmp_printf("%.*Ff\n", fp_get_prec(pi) / 5, pi);
             #endif
             
-            printf("%5.15f segundos\n\n", (stop - start));
+            printf("%5.15f seconds\n\n", (stop - start));
         #else
             #ifdef USE_MPFR
                 mpfr_printf("%.*Rf\n", fp_get_prec(pi) / 5, pi);
