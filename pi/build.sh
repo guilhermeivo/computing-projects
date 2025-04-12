@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+# cria a documentacao (experiments_wth_pi.pdf)
+
 while getopts ri flag
 do
     case "${flag}" in

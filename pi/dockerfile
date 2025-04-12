@@ -1,9 +1,13 @@
 # syntax=docker/dockerfile:1
 
+ARG GMP_VERSION="6.2.1"
+ARG MPFR_VERSION="4.2.2"
 ARG COMPILER_VERSION="5.0.0"
 
 FROM debian:bookworm-slim AS base-env
 
+ARG GMP_VERSION
+ARG MPFR_VERSION
 ARG COMPILER_VERSION
 
 RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
@@ -18,6 +22,7 @@ RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
     libncurses-dev \
     zlib1g-dev \
     libxml2-dev \
+    m4 \
     python3 && \
     update-ca-certificates && \
     localedef -i pt_BR -c -f UTF-8 -A /usr/share/locale/locale.alias pt_BR.UTF-8 && \
@@ -26,12 +31,23 @@ RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
 
 ENV LANG=pt_BR.utf8
 
-# lib-dev extras
-RUN apt-get update -y -qq && apt-get install -y -qq --no-install-recommends \
-    # TODO: install lib source code
-    libgmp3-dev libmpfr-dev && \
-    apt-get -y autoclean && apt-get -y autoremove && apt-get -y clean && \
-    rm -rf /var/lib/apt/lists/*
+WORKDIR /tmp/gmp
+RUN wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.xz
+RUN tar -xvf gmp-${GMP_VERSION}.tar.xz
+RUN cd gmp-${GMP_VERSION} && \
+    ./configure && \
+    make && \
+    make check && \
+    make install
+
+WORKDIR /tmp/mpfr
+RUN wget https://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.xz
+RUN tar -xvf mpfr-${MPFR_VERSION}.tar.xz
+RUN cd mpfr-${MPFR_VERSION} && \
+    ./configure && \
+    make && \
+    make check && \
+    make install
 
 WORKDIR /tmp/aocc
 RUN wget https://download.amd.com/developer/eula/aocc/aocc-5-0/aocc-compiler-${COMPILER_VERSION}.tar

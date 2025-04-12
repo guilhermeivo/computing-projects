@@ -12,10 +12,13 @@ export LD_LIBRARY_PATH=$AOCC_FOLDER/aocc-compiler-${COMPILER_VERSION}/lib:$LD_LI
 export LD_LIBRARY_PATH=$AOCC_FOLDER/aocc-compiler-${COMPILER_VERSION}/lib32:$LD_LIBRARY_PATH
 
 OUTPUT_FILES=("gcc__default" "clang__default" "clang__lld")
+METHODS=("m" "t" "s")
 
 OUTPUT_DEFAULT=$FOLDER/${OUTPUT_FILES[0]}
 
 $GCC $FOLDER/experiments_with_pi.c -Wall -O3 -lmpfr -lgmp -o $OUTPUT_DEFAULT
+
+#---------------------------------------------
 
 printf " -- Monte Carlo Convergence -- "
 MAX=1000
@@ -32,11 +35,11 @@ do
     sleep 1 # para dar tempo de gerar outra seed :)
 done > $FOLDER/pi_monteCarlo_histogram.dat
 
-printf " -- Machin -- "
+#printf " -- Machin -- "
 
-MAX=100
-out=$("$OUTPUT_DEFAULT" m $MAX | cut -c1-"$(expr $MAX + 2)" | sed -E -e :a -e 's/(.*[0-9])([0-9]{5})/\1 \\;\\allowbreak \2/;ta')
-echo "\noindent\$\pi_{$MAX}=$out\$" > $FOLDER/pi_machin.tex
+#MAX=100
+#out=$("$OUTPUT_DEFAULT" m $MAX | cut -c1-"$(expr $MAX + 2)" | sed -E -e :a -e 's/(.*[0-9])([0-9]{5})/\1 \\;\\allowbreak \2/;ta')
+#echo "\noindent\$\pi_{$MAX}=$out\$" > $FOLDER/pi_machin.tex
 
 printf " -- Takano -- "
 
@@ -44,17 +47,17 @@ MAX=100
 out=$("$OUTPUT_DEFAULT" t $MAX | cut -c1-"$(expr $MAX + 2)" | sed -E -e :a -e 's/(.*[0-9])([0-9]{5})/\1 \\;\\allowbreak \2/;ta')
 echo "\noindent\$\pi_{$MAX}=$out\$" > $FOLDER/pi_takano.tex
 
-printf " -- Stormer -- "
+#printf " -- Stormer -- "
 
-MAX=100
-out=$("$OUTPUT_DEFAULT" s $MAX | cut -c1-"$(expr $MAX + 2)" | sed -E -e :a -e 's/(.*[0-9])([0-9]{5})/\1 \\;\\allowbreak \2/;ta')
-echo "\noindent\$\pi_{$MAX}\;=\;$out\$" > $FOLDER/pi_stormer.tex
+#MAX=100
+#out=$("$OUTPUT_DEFAULT" s $MAX | cut -c1-"$(expr $MAX + 2)" | sed -E -e :a -e 's/(.*[0-9])([0-9]{5})/\1 \\;\\allowbreak \2/;ta')
+#echo "\noindent\$\pi_{$MAX}\;=\;$out\$" > $FOLDER/pi_stormer.tex
 
-printf " -- Save Pi -- "
+#printf " -- Save Pi -- "
 
-MAX=100000
-out=$("$OUTPUT_DEFAULT" s $MAX | cut -c1-"$(expr $MAX + 2)")
-echo "$out" > $FOLDER/pi_$MAX.tex
+#MAX=100000
+#out=$("$OUTPUT_DEFAULT" s $MAX | cut -c1-"$(expr $MAX + 2)")
+#echo "$out" > $FOLDER/pi_$MAX.tex
 
 $GCC -DDEBUG $FOLDER/experiments_with_pi.c -Wall -O3 -lmpfr -lgmp -o $FOLDER/${OUTPUT_FILES[0]}
 
@@ -68,7 +71,6 @@ do
 done >> "$FOLDER/takano_timerun.dat"
 
 $CLANG -DDEBUG $FOLDER/experiments_with_pi.c -Wall -O3 -lmpfr -lgmp -o $FOLDER/${OUTPUT_FILES[1]}
-
 $CLANG -DDEBUG -fuse-ld=lld $FOLDER/experiments_with_pi.c -I$AOCC_FOLDER/aocc-compiler-${COMPILER_VERSION}/include -Wall -O3 -lamdlibm -lm -lmpfr -lgmp -o $FOLDER/${OUTPUT_FILES[2]} -fuse-ld=lld
 
 MAX=200
