@@ -651,20 +651,6 @@ void takano(unsigned long long err, fp_t pi) {
     fp_t arctg_110443;
     generalArctgWithError_fp(arctg_110443, err, 12, 110443);
 
-    // equalizar precisão
-    /*fp_t *arctg[] = { &arctg_49, &arctg_57, &arctg_239, &arctg_110443 };
-    mpfr_prec_t maxPrecision = MPFR_PREC_MIN;
-    for (int i = 0; i < 4; i++) {
-        if (maxPrecision < fp_get_prec(arctg[i])) {
-            maxPrecision = fp_get_prec(arctg[i]);
-        }
-    }
-    for (int i = 0; i < 4; i++) {
-        if (maxPrecision > fp_get_prec(arctg[i])) {
-            mpfr_prec_round(*(arctg[i]), maxPrecision, DEFAULT_ROUND);
-        }
-    }*/
-
     fp_add(pi, arctg_49, arctg_57);
     fp_sub(pi, pi, arctg_239);
     fp_add(pi, pi, arctg_110443);
