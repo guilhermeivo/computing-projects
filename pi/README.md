@@ -5,7 +5,7 @@
 </h1>
 
 ## Compilação
-* Para criar o arquivo e o documento (para o documento é necessário instalar o [`m_style`](#configuração-do-pacote-m_style)) basta digitar:
+* Para criar o arquivo e o documento[^1] basta digitar:
 ```
 $ tex experiments_with_pi.ins 
 
@@ -19,8 +19,17 @@ $ ./build.sh
 * Caso deseja compilar o arquivo `experiments_with_pi.c` manualmente:
 ```
 $ tex experiments_with_pi.ins 
-$ gcc experiments_with_pi.c -lmpfr -lgmp -o experiments_with_pi -D DEBUG
+$ gcc experiments_with_pi.c -lmpfr -lgmp -lpthread -o experiments_with_pi -D<MACROS>
 ```
+
+| Macros                       | Definition[^2] |
+|------------------------------|----------------|
+| DEBUG                        |                |
+| USE_MPFR                     |                |
+| USE_MPF                      |                |
+| USE_PTHREAD                  |                |
+| NUMBER_THREADS               | nproc --all    |
+
 
 E para executar o arquivo compilado:
 ```
@@ -31,8 +40,6 @@ $ experiments_with_pi <METHOD> <ERR>
 |-------------------------------------	|--------	|
 | m (machin); t (takano); s (stormer) 	| Number 	|
 
-## Configuração do pacote m_style
-```
-$ git clone https://github.com/guilhermeivo/m_style/
-$ ./SAVE.sh
-```
+[^1]: Para o documento é necessário instalar o pacote [`m_style`](https://github.com/guilhermeivo/m_style).
+
+[^2]: Definições recomendadas.

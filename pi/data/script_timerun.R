@@ -44,6 +44,11 @@ test_data <- read.delim(paste("generated/", "takano_timerun", ".dat", sep = ""))
 pdf(file = paste("generated/timerun__plot", ".pdf", sep = ""), width = 7, height = 4, family = "serif")
 
 par(mar=c(5, 5, 1, 3))
-plot(test_data$i, test_data$time, ylab="Tempo (segundos)", xlab="Precisão")
+plot(test_data$i, test_data$time_single, type = "l", ylab="Tempo (segundos)", xlab="Precisão")
+
+lines(test_data$i, type = "l", test_data$time_single, col = gray(0.3))
+lines(test_data$i, type = "l", test_data$time_multi, col = gray(0.8))
+
+legend("topleft", legend = c("singlethread", "multithread"), col = c(gray(0.3), gray(0.8)), lty = 1)
 
 dev.off()

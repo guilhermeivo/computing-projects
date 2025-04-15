@@ -17,5 +17,8 @@
     },
     "files.associations": {
         "*.ins": "latex",
+        "stdlib.h": "c",
+        "string.h": "c",
+        "stdio.h": "c"
     },
 }

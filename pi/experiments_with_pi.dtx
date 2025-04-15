@@ -117,13 +117,28 @@
 #include <string.h>
 #include <gmp.h>
 #include <mpfr.h>
+#include <pthread.h>
+#include <assert.h>
 #include "../timeclock.h"
 
-#define USE_MPFR
-//#define USE_MPF // nao usa metodos de arredondamento
+//#define USE_MPFR
+//#define USE_MPF
+#define USE_PTHREAD
+
+#ifndef NUMBER_THREADS
+    #define NUMBER_THREADS 1
+#endif
+
+#ifdef USE_PTHREAD
+    #define USE_MPF // nao usa metodos de arredondamento
+#endif
 
 #if (!defined(MPFR_VERSION) || (MPFR_VERSION < MPFR_VERSION_NUM(3,0,0)))
 # error "Wrong MPFR version."
+#endif
+
+#if (defined(USE_MPFR) && defined(USE_PTHREAD))
+# error "USE_PTHREAD only works with USE_MPF mode active."
 #endif
 
 #ifdef USE_MPFR
@@ -445,8 +460,8 @@ unsigned long int generalErrorHandle(unsigned long int d, unsigned long int A, u
 %Porém, utilizando essas funções para $\pi/4=\arctg{(1)}$ alcançamos as limitações das representações utilizadas (\verb|unsigned long int| e \verb|long double|) ao tentar calcular para um $d$ grande, que no caso dos pontos flutuantes segue a norma específica para formatos e operações para aritmética em sistemas de computadores, IEEE 754\footnote{Representado na norma por \verb|binary64| dependendo da arquitetura da máquina.}\cite{ieee}. Então é necessário utilizar funções para cálculos de precisão arbitrária, sendo, nesse caso, utilizada a biblioteca \textit{GNU MPFR}, uma biblioteca \textit{C} para cálculos de ponto flutuante de precisão múltipla com arredondamento correto, e baseada na biblioteca \textit{GNU Multiple Precision Arithmetic} (\textit{GMP}).
 %
 %\phantomsection%
-%\addcontentsline{toc}{subsection}{\protect\numberline{}Usando \textit{GNU MPFR} e \textit{GNU GMP}}
-%\subsection*{Usando \textit{GNU MPFR} e \textit{GNU GMP}}\phantom{}
+%\addcontentsline{toc}{subsection}{\protect\numberline{}Usando \textit{GNU MPFR} e \textit{GNU MP}}
+%\subsection*{Usando \textit{GNU MPFR} e \textit{GNU MP}}\phantom{}
 %Usaremos como prefixo ou sufixo nos nomes das funções e das variáveis \verb|fp| para caso use pontos flutuantes de valor arbitrário em sua composição e o prefixo ou sufixo \verb|gmp| para caso use valores inteiros de valor arbitrário.
 %
 %\begin{macro}{generalArctg\_mpfr()}
@@ -499,14 +514,123 @@ void generalArctg_fp(const mpz_t n, unsigned long int a, fp_t res) {
 
         mpz_mul(pow, pow, aux_pow_4); // pow *= a^4
     }
-    mpz_clears(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, NULL);
-
+    mpz_clears(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient, NULL);
     fp_clears(frac, numerator_fp, quotient_fp, NULL);
 }
 %    \end{lstlisting}
 % \end{macro}
 %\iffalse
 %<*c>
+
+typedef struct { 
+    mpz_t start;
+    mpz_t finish;
+    unsigned long int a;
+    mpf_t partial_res;
+} phtread_arg;
+
+static void *thread__generalArctg_fp(void *arg) {
+    phtread_arg *request = (phtread_arg*)arg;
+
+    mpf_set_ui(request->partial_res, 0);
+
+    if (mpz_cmp_ui(request->start, 0) < 0 || mpz_cmp_ui(request->finish, 0) < 0) {
+        pthread_exit(NULL);
+    }
+
+    mpz_t i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient;
+    mpz_inits(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient, NULL);
+
+    mpz_set_ui(a_gmp, request->a);
+    mpz_pow_ui(aux_pow_4, a_gmp, 4);
+    mpz_pow_ui(aux_pow_2, a_gmp, 2);
+    mpz_pow_ui(pow, a_gmp, mpz_get_ui(request->start) + 3);
+
+    mpf_t frac, numerator_fp, quotient_fp;
+    mpf_inits(frac, numerator_fp, quotient_fp, NULL);
+
+    for (mpz_set(i, request->start); mpz_cmp(i, request->finish) < 0; mpz_add_ui(i, i, 4)) {
+        mpz_add_ui(i_1, i, 1);
+        mpz_add_ui(i_3, i, 3);
+
+        // numerator
+        mpz_mul(numerator, i_3, aux_pow_2);
+        mpz_sub(numerator, numerator, i_1);
+
+        // quocient
+        mpz_mul(quotient, i_1, i_3);
+        mpz_mul(quotient, quotient, pow);
+
+        mpf_set_z(numerator_fp, numerator);
+        mpf_set_z(quotient_fp, quotient);
+        
+        mpf_div(frac, numerator_fp, quotient_fp);
+        mpf_add(request->partial_res, request->partial_res, frac);
+
+        mpz_mul(pow, pow, aux_pow_4);
+    }
+
+    mpz_clears(i, i_1, i_3, aux_pow_4, aux_pow_2, pow, a_gmp, numerator, quotient, NULL);
+    mpf_clears(frac, numerator_fp, quotient_fp, NULL);
+
+    pthread_exit(NULL);
+}
+
+void generalArctg_pth(mpz_t n, unsigned long int a, mpf_t res) {
+    mpf_set_ui(res, 0);
+
+    phtread_arg request[NUMBER_THREADS];
+    pthread_t threads[NUMBER_THREADS];
+
+    mpz_t current_parts, n_parts, rest, aux_test_number;
+    mpz_inits(aux_test_number, current_parts, n_parts, rest, NULL);
+
+    // i+=4
+    mpz_cdiv_q_ui(aux_test_number, n, NUMBER_THREADS);
+    mpz_cdiv_r_ui(rest, aux_test_number, 4);
+    while (mpz_cmp_ui(rest, 0) != 0) {
+        mpz_add_ui(aux_test_number, aux_test_number, 1);
+        mpz_cdiv_r_ui(rest, aux_test_number, 4);
+    }
+    mpz_set(n_parts, aux_test_number);
+    mpz_set_ui(current_parts, 0);
+    mpz_add(current_parts, current_parts, rest);
+
+    for (size_t i = 0; i < NUMBER_THREADS; ++i) {
+        mpz_inits(request[i].start, request[i].finish, NULL);
+        mpz_set(request[i].start, current_parts);
+        mpz_add(current_parts, current_parts, n_parts);
+        mpz_set(request[i].finish, current_parts);
+        mpf_init(request[i].partial_res);
+        if (mpz_cmp_ui(request[i].start, 0) < 0) {
+            mpz_set_ui(request[i].start, 0);
+        }
+        if (mpz_cmp(request[i].finish, n) > 0) {
+            mpz_set(request[i].finish, n);
+        }
+        if (mpz_cmp(request[i].start, request[i].finish) > 0) {
+            mpz_set_si(request[i].start, -1);
+            mpz_set_si(request[i].finish, -1);
+        }
+        request[i].a = a;
+
+        // gmp_printf ("%Zd %Zd (%Zd)\n", request[i].start, request[i].finish, n);
+
+        pthread_create(threads+i, NULL, thread__generalArctg_fp, request+i);
+    }
+
+    mpz_clears(current_parts, n_parts, rest, aux_test_number, NULL);
+ 
+    for (size_t i = 0; i < NUMBER_THREADS; ++i) {
+        pthread_join(threads[i], NULL);
+        mpf_add(res, res, request[i].partial_res);
+    }
+
+    for (size_t i = 0; i < NUMBER_THREADS; ++i) {
+        mpz_clears(request[i].start, request[i].finish, NULL);
+        mpf_clear(request[i].partial_res);
+    }
+}
 
 %</c>
 %\fi
@@ -573,7 +697,11 @@ void generalArctgWithError_fp(fp_t arctg_a, unsigned long int d, unsigned long i
     generalErrorHandle_gmp(d, A, a, n_a);
 
     fp_init(arctg_a);
-    generalArctg_fp(n_a, a, arctg_a);
+    #ifdef USE_PTHREAD
+        generalArctg_pth(n_a, a, arctg_a);
+    #else
+        generalArctg_fp(n_a, a, arctg_a);
+    #endif
     fp_mul_ui(arctg_a, arctg_a, A);
 
     #ifdef __DEBUG__
@@ -670,7 +798,8 @@ void takano(unsigned long long err, fp_t pi) {
 %   \centering
 %   \caption{Tempo de evolução com o aumento da precisão do valor de \(\pi\) usando fórmula de \textit{Kikuo Takano}}
 %   \includegraphics[width=0.95\columnwidth]{generated/timerun__plot}
-%   Fonte: Elaborado pelo próprio autor
+%   {\par\small Fonte: Elaborado pelo próprio autor}
+%   {\par\small Nota: Usado \input{generated/number_threads.txt} \textit{threads} para gerar os dados.}
 %   \label{fig:timerun__plot}
 %\end{graphic}%
 %

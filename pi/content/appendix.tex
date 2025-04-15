@@ -6,5 +6,24 @@
     \input{generated/pi_takano.tex}
 
     \cleardoublepage
-    
+
+    \section{Problemas com \textit{Multithreading} e \textit{GNU MPFR}} \label{apx:multithreading}
+
+    O uso das bibliotecas \verb|OpenMP| e \verb|Pthreads| tiveram incompatibilidades com a função \verb|mpfr_set_z| da biblioteca \verb|MPFR| por isso o uso da biblioteca \verb|GMP| para caso deseje usar \textit{multithreading} na aplicação.
+   
+\newcommand\lstsetnumber[1]{\gdef\thelstnumber{#1}}
+\lstsetnumber{\ldots}
+\begin{lstlisting}[name=multithreading,language=c,style=macrocode,mathescape=true]
+$\lstsetnumber{}$ 
+mpfr_set_z(mpfr_number, mpf_number, MPFR_RNDF);
+
+gmp_printf("%Zd\n", mpf_number);
+mpfr_printf("%Rf\n", mpfr_number);
+\end{lstlisting}
+   
+\begin{lstlisting}[name=multithreading,style=macrocode,frame=single,numbers=none,mathescape=true]
+195453628425706224187742401424363484911678749488065314418725120127483317234$\dots$
+195453628425706258249554087436846402840899079169776236471133223956502053110$\dots$
+\end{lstlisting}
+
 \end{appendixenv}
